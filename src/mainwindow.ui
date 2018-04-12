@@ -228,7 +228,13 @@ subcontrol-origin: margin;
         <widget class="QComboBox" name="actionsCombo"/>
        </item>
        <item>
-        <widget class="QTreeView" name="projectStructureView"/>
+        <widget class="QTreeWidget" name="projectStructureView">
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
+        </widget>
        </item>
       </layout>
      </widget>

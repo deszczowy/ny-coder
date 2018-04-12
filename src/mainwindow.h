@@ -29,6 +29,9 @@ private slots:
 
     void on_breakButton_clicked();
 
+
+    void onOpenFolder();
+
 private:
     Ui::MainWindow *ui;
     QProcess *process;

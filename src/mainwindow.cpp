@@ -1,10 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "editorpage.h"
+#include "projecttree.h"
 
 #include "QProcess"
 #include "QDebug"
-#include "QFileSystemModel"
+#include "QFileDialog"
 
 #include <QCloseEvent>
 
@@ -29,15 +30,11 @@ MainWindow::MainWindow(QWidget *parent) :
     nyquistIsRunning = false;
     runNyquist();
 
-    //
-    QFileSystemModel *model = new QFileSystemModel;
-        model->setRootPath("/home/krystian/Repo/");
-ui->projectStructureView->setModel(model);
-ui->projectStructureView->setRootIndex(model->index(QDir::currentPath()));
-    //
     process->setProcessChannelMode(QProcess::MergedChannels);
     connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(onStdoutAvailable()) );
     connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(onFinished(int, QProcess::ExitStatus)) );
+
+    connect(ui->actionOpen_folder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
 }
 
 MainWindow::~MainWindow()
@@ -88,7 +85,7 @@ void MainWindow::exitNyquist(){
 }
 
 void MainWindow::on_projectStructureView_doubleClicked(const QModelIndex &index)
-{
+{/*
     //QModelIndex index = ui->projectStructureView->currentIndex();
     QString path = ((QFileSystemModel)ui->projectStructureView->model()).filePath(index);
     QFile file(path);
@@ -97,10 +94,20 @@ void MainWindow::on_projectStructureView_doubleClicked(const QModelIndex &index)
 
     QTextStream ReadFile(&file);
     //ui->tabEditor1->setText(ReadFile.readAll());
+    */
 }
 
 void MainWindow::on_breakButton_clicked()
 {
     EditorPage *page = new EditorPage;
     ui->editorMain->addTab(page, tr("General"));
+}
+
+void MainWindow::onOpenFolder()
+{
+    QStringList extensions;
+    extensions << ".lsp" << ".lisp";
+
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    ProjectTree tree(ui->projectStructureView, dir, extensions);
 }
