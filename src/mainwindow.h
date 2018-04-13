@@ -31,6 +31,10 @@ private slots:
 
     void on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
+    void on_clearOutput_clicked();
+
+    void on_refreshOutput_clicked();
+
 private:
     Ui::MainWindow *ui;
     QProcess *process;

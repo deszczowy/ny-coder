@@ -94,8 +94,9 @@ void MainWindow::exitNyquist(){
 
 void MainWindow::on_breakButton_clicked()
 {
-    EditorPage *page = new EditorPage;
-    ui->editorMain->addTab(page, tr("General"));
+    if (nyquistIsRunning){
+        process->write("(top) \n");
+    }
 }
 
 void MainWindow::onOpenFolder()
@@ -115,4 +116,16 @@ void MainWindow::on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item
         page->loadFile(sourceFile->getFilePath());
         ui->editorMain->addTab(page, sourceFile->getFileName());
     }
+}
+
+void MainWindow::on_clearOutput_clicked()
+{
+    ui->outputArea->clear();
+}
+
+void MainWindow::on_refreshOutput_clicked()
+{
+    ui->outputArea->clear();
+    exitNyquist();
+    runNyquist();
 }
