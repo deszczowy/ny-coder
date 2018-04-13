@@ -1,12 +1,12 @@
 #include "projectitem.h"
 
-#include "QFile"
+#include "QFileInfo"
 
 ProjectItem::ProjectItem(QTreeWidgetItem *parent, QStringList nodeName, QString filePath)
     : QTreeWidgetItem(parent, nodeName), fileName(""), filePath("")
 {
     if (QFile::exists(filePath)){
-        this->fileName = QFile(filePath).fileName();
+        this->fileName = QFileInfo(filePath).fileName();
         this->filePath = filePath;
     }
 }

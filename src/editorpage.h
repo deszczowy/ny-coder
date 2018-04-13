@@ -15,8 +15,14 @@ public:
     explicit EditorPage(QWidget *parent = 0);
     ~EditorPage();
 
+    void loadFile(QString path);
+    QString getPath();
+    QString getContent();
+
 private:
     Ui::EditorPage *ui;
+
+    QString _path;
 };
 
 #endif // EDITORPAGE_H

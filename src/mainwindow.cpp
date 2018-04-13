@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 #include "editorpage.h"
 #include "projecttree.h"
+#include "projectitem.h"
+
+#include "fstream"
 
 #include "QProcess"
 #include "QDebug"
@@ -60,13 +63,18 @@ void MainWindow::on_application_quit(){
 void MainWindow::on_goButton_clicked()
 {
     if (nyquistIsRunning){
-        QFile ffile("test.lsp");
-        if (ffile.open(QFile::WriteOnly | QIODevice::Text)) {
-            QTextStream out(&ffile);
-            //out << ui->editorMain->toPlainText();
-        }
+        QString localSrc =
+        ((EditorPage*)ui->editorMain->currentWidget())->getPath();
 
-        process->write("(load \"test.lsp\") \n");
+        std::string ba = ((EditorPage*)ui->editorMain->currentWidget())->getContent().toStdString();
+
+        std::ofstream out(localSrc.toStdString());
+        out << ba;
+        out.close();
+
+        QString command("(load \"" + localSrc + "\") \n");
+        process->write(command.toLatin1());
+
     }
 }
 
@@ -84,19 +92,6 @@ void MainWindow::exitNyquist(){
     }
 }
 
-void MainWindow::on_projectStructureView_doubleClicked(const QModelIndex &index)
-{/*
-    //QModelIndex index = ui->projectStructureView->currentIndex();
-    QString path = ((QFileSystemModel)ui->projectStructureView->model()).filePath(index);
-    QFile file(path);
-
-    file.open(QFile::ReadOnly | QFile::Text);
-
-    QTextStream ReadFile(&file);
-    //ui->tabEditor1->setText(ReadFile.readAll());
-    */
-}
-
 void MainWindow::on_breakButton_clicked()
 {
     EditorPage *page = new EditorPage;
@@ -108,6 +103,16 @@ void MainWindow::onOpenFolder()
     QStringList extensions;
     extensions << ".lsp" << ".lisp";
 
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     ProjectTree tree(ui->projectStructureView, dir, extensions);
+}
+
+void MainWindow::on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
+    if (sourceFile){
+        EditorPage *page = new EditorPage;
+        page->loadFile(sourceFile->getFilePath());
+        ui->editorMain->addTab(page, sourceFile->getFileName());
+    }
 }

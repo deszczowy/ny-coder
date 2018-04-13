@@ -5,6 +5,7 @@
 #include "QProcess"
 #include "QTextEdit"
 #include "QSplitter"
+#include "QTreeWidgetItem"
 
 namespace Ui {
 class MainWindow;
@@ -24,13 +25,11 @@ private slots:
     void onStdoutAvailable();
     void onFinished(int, QProcess::ExitStatus);
     void on_goButton_clicked();
-
-    void on_projectStructureView_doubleClicked(const QModelIndex &index);
-
     void on_breakButton_clicked();
 
-
     void onOpenFolder();
+
+    void on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
 private:
     Ui::MainWindow *ui;
