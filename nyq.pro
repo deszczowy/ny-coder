@@ -26,16 +26,19 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-        src/editorpage.cpp \
     src/projectitem.cpp \
-    src/projecttree.cpp
+    src/projecttree.cpp \
+    src/syntaxlisp.cpp \
+    src/editor/editor.cpp \
+    src/editor/extensionbar.cpp
 
 HEADERS += \
         src/mainwindow.h \
-        src/editorpage.h \
     src/projectitem.h \
-    src/projecttree.h
+    src/projecttree.h \
+    src/syntaxlisp.h \
+    src/editor/editor.h \
+    src/editor/extensionbar.h
 
 FORMS += \
-        src/mainwindow.ui \
-        src/editorpage.ui
+        src/mainwindow.ui

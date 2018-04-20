@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "editorpage.h"
+
 #include "projecttree.h"
 #include "projectitem.h"
 
@@ -11,6 +11,8 @@
 #include "QFileDialog"
 
 #include <QCloseEvent>
+
+#include <src/editor/editor.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -64,9 +66,9 @@ void MainWindow::on_goButton_clicked()
 {
     if (nyquistIsRunning){
         QString localSrc =
-        ((EditorPage*)ui->editorMain->currentWidget())->getPath();
+        ((Editor*)ui->editorMain->currentWidget())->GetPath();
 
-        std::string ba = ((EditorPage*)ui->editorMain->currentWidget())->getContent().toStdString();
+        std::string ba = ((Editor*)ui->editorMain->currentWidget())->GetContent().toStdString();
 
         std::ofstream out(localSrc.toStdString());
         out << ba;
@@ -112,8 +114,13 @@ void MainWindow::on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item
 {
     ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
     if (sourceFile){
+        /*
         EditorPage *page = new EditorPage;
         page->loadFile(sourceFile->getFilePath());
+        ui->editorMain->addTab(page, sourceFile->getFileName());
+        */
+        Editor *page = new Editor;
+        page->LoadFile(sourceFile->getFilePath());
         ui->editorMain->addTab(page, sourceFile->getFileName());
     }
 }
