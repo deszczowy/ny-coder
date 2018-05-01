@@ -3,9 +3,16 @@
 
 #include <QPainter>
 #include <QTextBlock>
+#include <QAbstractItemView>
+#include <QScrollBar>
 #include <QTextStream>
+#include <QStringListModel>
+#include <QFile>
+#include <QApplication>
+#include <QFileDialog>
 
 #include <src/syntaxlisp.h>
+#include <src/sourcefile.h>
 
 /*
 QWidget
@@ -20,9 +27,19 @@ padding: 5px;
 }
 */
 
-Editor::Editor(QWidget *parent) : QPlainTextEdit(parent)
+Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
 {
     _extensionBar = new ExtensionBar(this);
+
+    // autocompletion
+    completer = new QCompleter(this);
+    completer->setModel(modelFromFile("/home/krystian/Repo/ny-coder/bin/model.txt"));
+    completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    completer->setCaseSensitivity(Qt::CaseInsensitive);
+    //completer->setWrapAround(false);
+
+    SetCompleter(completer);
+    //
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(UpdateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(UpdateLineNumberArea(QRect,int)));
@@ -31,9 +48,17 @@ Editor::Editor(QWidget *parent) : QPlainTextEdit(parent)
     UpdateLineNumberAreaWidth(0);
     SelectCurrentLine();
 
+    setFont(QFont("Inconsolata", 10, 1));
+
+
     SyntaxLisp *syntax = new SyntaxLisp(document());
 
     //setStyleSheet("padding: 5px; border: 0; background-color: #fff;");
+    LoadFile(filePath);
+}
+
+Editor::~Editor(){
+    delete _source;
 }
 
 void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
@@ -76,25 +101,69 @@ int Editor::LineNumberAreaWidth()
     return space;
 }
 
+void Editor::SetCompleter(QCompleter *completer)
+{
+    if (completer)
+    {
+        QObject::disconnect(completer, 0, this, 0);
+    }
+
+    _completer = completer;
+    if(!_completer) return;
+
+    _completer->setWidget(this);
+    _completer->setCompletionMode(QCompleter::PopupCompletion);
+    _completer->setCaseSensitivity(Qt::CaseInsensitive);
+
+    QObject::connect(
+        _completer,
+        SIGNAL(activated(QString)),
+        this,
+        SLOT(InsertCompletion(QString))
+                );
+}
+
+QCompleter *Editor::GetCompleter() const
+{
+    return _completer;
+}
+
 void Editor::LoadFile(QString path)
 {
-    _path = path;
+    _source = new SourceFile(path);
+    document()->setPlainText(_source->Content());
+}
 
-    QFile ffile(_path);
-    if (ffile.open(QFile::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&ffile);
-        document()->setPlainText(in.readAll());
+QString Editor::Content()
+{
+    return toPlainText();
+}
+
+bool Editor::Save()
+{
+    if (!_source->IsNew())
+    {
+        if (_source->Save(Content()))
+        {
+            document()->setModified(false);
+        }
+    }
+    else
+    {
+        SaveAs();
     }
 }
 
-QString Editor::GetPath()
+bool Editor::SaveAs()
 {
-    return _path;
-}
-
-QString Editor::GetContent()
-{
-    return toPlainText();
+    QString name = QFileDialog::getSaveFileName(0, tr("Save file as..."), "~/", tr("Lisp source files (*.lsp)"));
+    if (name != "")
+    {
+        if(_source->SaveAs(name, Content()))
+        {
+            document()->setModified(false);
+        }
+    }
 }
 
 void Editor::resizeEvent(QResizeEvent *event)
@@ -103,6 +172,64 @@ void Editor::resizeEvent(QResizeEvent *event)
 
     QRect cr = contentsRect();
     _extensionBar->setGeometry(QRect(cr.left(), cr.top(), LineNumberAreaWidth(), cr.height()));
+}
+
+void Editor::keyPressEvent(QKeyEvent *event)
+{
+    if (_completer && _completer->popup()->isVisible()){
+        switch (event->key()){
+        case Qt::Key_Enter:
+        case Qt::Key_Return:
+        case Qt::Key_Escape:
+        case Qt::Key_Tab:
+        case Qt::Key_Backtab:
+            event->ignore();
+            return;
+        default:
+            break;
+        }
+    }
+
+    // shortcut = ctrl+e
+    bool isShortCut = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_E);
+
+    if (!_completer || !isShortCut)
+        QPlainTextEdit::keyPressEvent(event);
+
+    const bool ctrlOrShift = event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
+    if(!_completer || (ctrlOrShift && event->text().isEmpty()))
+        return;
+
+    static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-=");
+    bool hasModifier = (event->modifiers() != Qt::NoModifier) && !ctrlOrShift;
+    QString completionPrefix = TextUnderCursor();
+
+    if (!isShortCut && (hasModifier || event->text().isEmpty() || completionPrefix.length() < 3 || eow.contains(event->text().right(1))))
+    {
+        _completer->popup()->hide();
+        return;
+    }
+
+    if (completionPrefix != _completer->completionPrefix())
+    {
+        _completer->setCompletionPrefix(completionPrefix);
+        _completer->popup()->setCurrentIndex(_completer->completionModel()->index(0, 0));
+    }
+
+    QRect rect = cursorRect();
+    rect.setWidth(_completer->popup()->sizeHintForColumn(0)
+                  + _completer->popup()->verticalScrollBar()->sizeHint().width()
+                  );
+
+    _completer->complete(rect);
+}
+
+void Editor::focusInEvent(QFocusEvent *event)
+{
+    if (_completer)
+        _completer->setWidget(this);
+
+    QPlainTextEdit::focusInEvent(event);
 }
 
 void Editor::UpdateLineNumberAreaWidth(int newBlockCount)
@@ -138,4 +265,48 @@ void Editor::UpdateLineNumberArea(const QRect &rect, int dy)
 
     if (rect.contains(viewport()->rect()))
         UpdateLineNumberAreaWidth(0);
+}
+
+void Editor::InsertCompletion(const QString &completion)
+{
+    if(_completer->widget() != this)
+        return;
+
+    QTextCursor cursor = textCursor();
+
+    int extra = completion.length() - _completer->completionPrefix().length();
+
+    cursor.movePosition(QTextCursor::Left);
+    cursor.movePosition(QTextCursor::EndOfWord);
+    cursor.insertText(completion.right(extra));
+
+    setTextCursor(cursor);
+}
+
+QString Editor::TextUnderCursor() const
+{
+    QTextCursor cursor = textCursor();
+    cursor.select(QTextCursor::WordUnderCursor);
+    return cursor.selectedText();
+}
+
+QAbstractItemModel *Editor::modelFromFile(const QString & fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly))
+        return new QStringListModel(completer);
+
+#ifndef QT_NO_CURSOR
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+#endif
+    QStringList words;
+    while(!file.atEnd()){
+        QByteArray line = file.readLine();
+        if(!line.isEmpty())
+            words << line.trimmed();
+    }
+#ifndef QT_NO_CURSOR
+    QApplication::restoreOverrideCursor();
+#endif
+    return new QStringListModel(words, completer);
 }

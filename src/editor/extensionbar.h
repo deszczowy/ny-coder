@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "editor.h"
+class Editor;
 
 class ExtensionBar : public QWidget
 {

@@ -1,7 +1,7 @@
 #ifndef PROJECTTREE_H
 #define PROJECTTREE_H
 
-#include "QTreeWidget"
+#include <QTreeWidget>
 
 class ProjectTree
 {

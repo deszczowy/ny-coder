@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/otf">
+        <file>res/fonts/inconsolata.otf</file>
+    </qresource>
+    <qresource prefix="/license">
+        <file>res/fonts/inconsolata_license.txt</file>
+    </qresource>
+</RCC>

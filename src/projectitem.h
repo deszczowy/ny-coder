@@ -1,7 +1,7 @@
 #ifndef PROJECTITEM_H
 #define PROJECTITEM_H
 
-#include "QTreeWidgetItem"
+#include <QTreeWidgetItem>
 
 class ProjectItem : public QTreeWidgetItem
 {

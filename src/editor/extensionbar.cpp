@@ -1,5 +1,7 @@
 #include "extensionbar.h"
 
+#include "editor.h"
+
 ExtensionBar::ExtensionBar(Editor *parent) : QWidget(parent)
 {
     connectedEditor = parent;

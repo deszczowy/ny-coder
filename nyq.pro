@@ -30,7 +30,10 @@ SOURCES += \
     src/projecttree.cpp \
     src/syntaxlisp.cpp \
     src/editor/editor.cpp \
-    src/editor/extensionbar.cpp
+    src/editor/extensionbar.cpp \
+    src/controller.cpp \
+    src/nyquist.cpp \
+    src/sourcefile.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -38,7 +41,14 @@ HEADERS += \
     src/projecttree.h \
     src/syntaxlisp.h \
     src/editor/editor.h \
-    src/editor/extensionbar.h
+    src/editor/extensionbar.h \
+    src/controller.h \
+    src/action.h \
+    src/nyquist.h \
+    src/sourcefile.h
 
 FORMS += \
         src/mainwindow.ui
+
+RESOURCES += \
+    fonts.qrc

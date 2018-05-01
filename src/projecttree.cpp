@@ -1,7 +1,7 @@
 #include "projecttree.h"
 #include "projectitem.h"
 
-#include "QDir"
+#include <QDir>
 
 ProjectTree::ProjectTree(QTreeWidget *tree, QString path, QStringList filter)
 {

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ny-coder</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QWidget
@@ -33,7 +33,7 @@ QTabBar::tab {
 border: 0;
 border-radius: 0;
 min-width: 8ex;
-padding: 2px;
+padding: 10px;
 background-color: #ffffff;
 }
 QTabBar::tab:selected, QTabBar::tab:hover {
@@ -115,7 +115,21 @@ height: 0 px;
 subcontrol-position: top;
 subcontrol-origin: margin;
 }
-</string>
+
+QMenu
+{
+padding: 5px;
+}
+
+QMenu::item
+{
+padding: 5px;
+}
+
+QMenu::item:selected
+{
+color: #f00;
+}</string>
   </property>
   <widget class="QWidget" name="mainContainer">
    <property name="styleSheet">
@@ -141,7 +155,7 @@ subcontrol-origin: margin;
      <widget class="QFrame" name="navigatorPane">
       <property name="maximumSize">
        <size>
-        <width>200</width>
+        <width>300</width>
         <height>16777215</height>
        </size>
       </property>
@@ -183,6 +197,13 @@ subcontrol-origin: margin;
            <number>2</number>
           </property>
           <item>
+           <widget class="QPushButton" name="menuButton">
+            <property name="text">
+             <string>Menu</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="goButton">
             <property name="maximumSize">
              <size>
@@ -223,9 +244,6 @@ subcontrol-origin: margin;
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="actionsCombo"/>
        </item>
        <item>
         <widget class="QTreeWidget" name="projectStructureView">
@@ -406,60 +424,6 @@ subcontrol-origin: margin;
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>894</width>
-     <height>22</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuOrganizer">
-    <property name="title">
-     <string>Organizer</string>
-    </property>
-    <addaction name="actionOpen_folder"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_file"/>
-    <addaction name="actionSave_file_as"/>
-    <addaction name="actionOpen_for_edition"/>
-    <addaction name="actionClose"/>
-    <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-   </widget>
-   <addaction name="menuOrganizer"/>
-  </widget>
-  <action name="actionOpen_folder">
-   <property name="text">
-    <string>Open folder</string>
-   </property>
-  </action>
-  <action name="actionSave_file">
-   <property name="text">
-    <string>Save file</string>
-   </property>
-  </action>
-  <action name="actionSave_file_as">
-   <property name="text">
-    <string>Save file as ...</string>
-   </property>
-  </action>
-  <action name="actionOpen_for_edition">
-   <property name="text">
-    <string>Open for edition</string>
-   </property>
-  </action>
-  <action name="actionClose">
-   <property name="text">
-    <string>Close</string>
-   </property>
-  </action>
-  <action name="actionQuit">
-   <property name="text">
-    <string>Quit</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

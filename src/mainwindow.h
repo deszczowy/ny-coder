@@ -1,11 +1,18 @@
+//pip install --upgrade cppclean
+//cppclean /home/krystian/Repo/ny-coder/src
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "QProcess"
-#include "QTextEdit"
-#include "QSplitter"
-#include "QTreeWidgetItem"
+#include <QMenu>
+
+#include <QProcess>
+#include <QTextEdit>
+#include <QSplitter>
+#include <QTreeWidgetItem>
+
+#include "controller.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,26 +34,48 @@ private slots:
     void on_goButton_clicked();
     void on_breakButton_clicked();
 
-    void onOpenFolder();
+
 
     void on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column);
 
     void on_clearOutput_clicked();
 
     void on_refreshOutput_clicked();
+    void ShowContextMenu(const QPoint &pos);
+
+    void on_menuButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    QProcess *process;
+    Controller _controller;
+    
     QSplitter *mainSplitter;
     QSplitter *editorSplitter;
 
-    bool nyquistIsRunning;
+/*
+    The menu section,
+    all objects and methods.
+*/
+private:
+    QMenu* mainMenu;
 
-    void on_application_quit();
+    QAction* miOpenFolder;
+    QAction* miSaveCurrentFile;
+    QAction* miSaveAllFiles;
+    QAction* miQuitApplication;
+    QAction* miRunCurrentFile;
 
-    void runNyquist();
-    void exitNyquist();
+    void BuildMenuActionsStructure();
+    void BindMenuItemsWithSlots();
+    void DestroyMenuItems();
+
+private slots:
+    void onOpenFolder();
+    void onSaveCurrentFile();
+    void onSaveAllFiles();
+    void onQuitApplication();
+    void onRunCurrentFile();
+
 };
 
 #endif // MAINWINDOW_H

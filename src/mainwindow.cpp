@@ -1,16 +1,17 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include <ui_mainwindow.h>
 
 #include "projecttree.h"
 #include "projectitem.h"
 
-#include "fstream"
+#include <fstream>
+#include <iostream>
 
-#include "QProcess"
-#include "QDebug"
-#include "QFileDialog"
+#include <QDebug>
+#include <QFileDialog>
 
 #include <QCloseEvent>
+
 
 #include <src/editor/editor.h>
 
@@ -20,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    process = new QProcess(this);
+
+
     //
     mainSplitter = new QSplitter(this);
     mainSplitter->addWidget(ui->navigatorPane);
@@ -32,73 +34,116 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->editorAdditional->setTabsClosable(true);
     ui->editorAdditional->hide();
 
-    nyquistIsRunning = false;
-    runNyquist();
+BuildMenuActionsStructure();
 
-    process->setProcessChannelMode(QProcess::MergedChannels);
-    connect(process, SIGNAL(readyReadStandardOutput()), this, SLOT(onStdoutAvailable()) );
-    connect(process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(onFinished(int, QProcess::ExitStatus)) );
+    connect(_controller.GetNyquistProcess(), SIGNAL(readyReadStandardOutput()), this, SLOT(onStdoutAvailable()) );
+    connect(_controller.GetNyquistProcess(), SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(onFinished(int, QProcess::ExitStatus)) );
 
-    connect(ui->actionOpen_folder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
+ui->outputArea->setFont(QFont("courier"));
+
+    _controller.Start();
+
+    showMaximized();
 }
 
 MainWindow::~MainWindow()
 {
+    DestroyMenuItems();
     delete ui;
 }
 
 
+
 void MainWindow::closeEvent(QCloseEvent *event){
-    on_application_quit();
+    onQuitApplication();
 }
 
 void MainWindow::onStdoutAvailable(){
-    QByteArray data = process->readAllStandardOutput();
+    QByteArray data = _controller.GetNyquistProcess()->readAllStandardOutput();
     ui->outputArea->append(QString(data));
 }
 void MainWindow::onFinished(int, QProcess::ExitStatus){}
 
-void MainWindow::on_application_quit(){
-    exitNyquist();
+//
+//
+// Menu
+//
+//
+
+void MainWindow::ShowContextMenu(const QPoint &pos)
+{
+    if(mainMenu)
+    {
+        mainMenu->exec(mapToGlobal(pos));
+    }
 }
+
+void MainWindow::BuildMenuActionsStructure()
+{
+    mainMenu = new QMenu(tr("NyCoder"), this);
+
+    miOpenFolder      = new QAction("Open folder", this);
+    miSaveCurrentFile = new QAction("Save current file", this);
+    miSaveAllFiles    = new QAction("Save all files", this);
+    miQuitApplication = new QAction("Quit", this);
+    miRunCurrentFile  = new QAction("Run", this);
+
+    mainMenu->addAction(miOpenFolder);
+    mainMenu->addAction(miSaveCurrentFile);
+    mainMenu->addAction(miSaveAllFiles);
+    mainMenu->addAction(miRunCurrentFile);
+    mainMenu->addAction(miQuitApplication);
+
+    BindMenuItemsWithSlots();
+}
+
+void MainWindow::BindMenuItemsWithSlots()
+{
+    connect(miOpenFolder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
+}
+
+void MainWindow::DestroyMenuItems()
+{
+    delete miOpenFolder;
+    delete miSaveCurrentFile;
+    delete miSaveAllFiles;
+    delete miQuitApplication;
+    delete miRunCurrentFile;
+
+    delete mainMenu;
+}
+
+
+
+
+
+
+
+
+
+
 
 void MainWindow::on_goButton_clicked()
 {
-    if (nyquistIsRunning){
+    /*
         QString localSrc =
-        ((Editor*)ui->editorMain->currentWidget())->GetPath();
+        ((Editor*)ui->editorMain->currentWidget())->Path();
 
         std::string ba = ((Editor*)ui->editorMain->currentWidget())->GetContent().toStdString();
 
-        std::ofstream out(localSrc.toStdString());
-        out << ba;
-        out.close();
 
-        QString command("(load \"" + localSrc + "\") \n");
-        process->write(command.toLatin1());
 
-    }
+        _controller.ExecuteFile(localSrc);
+        */
 }
 
-void MainWindow::runNyquist(){
-    process->start("ny", QIODevice::ReadWrite);
-    process->write("(play (osc 50)) \n");
-    nyquistIsRunning = true;
-}
 
-void MainWindow::exitNyquist(){
-    if (nyquistIsRunning){
-        process->write("(break) \n");
-        process->write("(exit) \n");
-        process->close();
-    }
-}
+
+
 
 void MainWindow::on_breakButton_clicked()
 {
-    if (nyquistIsRunning){
-        process->write("(top) \n");
-    }
+
 }
 
 void MainWindow::onOpenFolder()
@@ -110,6 +155,26 @@ void MainWindow::onOpenFolder()
     ProjectTree tree(ui->projectStructureView, dir, extensions);
 }
 
+void MainWindow::onSaveCurrentFile()
+{
+    std::cout << "Save current";
+}
+
+void MainWindow::onSaveAllFiles()
+{
+    std::cout << "Save all";
+}
+
+void MainWindow::onQuitApplication()
+{
+    _controller.Shutdown();
+}
+
+void MainWindow::onRunCurrentFile()
+{
+    std::cout << "Run";
+}
+
 void MainWindow::on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column)
 {
     ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
@@ -119,8 +184,7 @@ void MainWindow::on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item
         page->loadFile(sourceFile->getFilePath());
         ui->editorMain->addTab(page, sourceFile->getFileName());
         */
-        Editor *page = new Editor;
-        page->LoadFile(sourceFile->getFilePath());
+        Editor *page = new Editor(this, sourceFile->getFilePath());
         ui->editorMain->addTab(page, sourceFile->getFileName());
     }
 }
@@ -133,6 +197,14 @@ void MainWindow::on_clearOutput_clicked()
 void MainWindow::on_refreshOutput_clicked()
 {
     ui->outputArea->clear();
-    exitNyquist();
-    runNyquist();
+
+}
+
+void MainWindow::on_menuButton_clicked()
+{
+    QPoint p(
+        ui->menuButton->pos().x() + 2,
+        ui->menuButton->pos().y() + ui->menuButton->height() + 2
+    );
+    ShowContextMenu(p);
 }

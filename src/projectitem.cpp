@@ -1,6 +1,6 @@
 #include "projectitem.h"
 
-#include "QFileInfo"
+#include <QFileInfo>
 
 ProjectItem::ProjectItem(QTreeWidgetItem *parent, QStringList nodeName, QString filePath)
     : QTreeWidgetItem(parent, nodeName), fileName(""), filePath("")
