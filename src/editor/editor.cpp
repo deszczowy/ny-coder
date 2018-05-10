@@ -48,7 +48,7 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
     UpdateLineNumberAreaWidth(0);
     SelectCurrentLine();
 
-    setFont(QFont("Inconsolata", 10, 1));
+    setFont(QFont("Liberation Mono", 12, 1));
 
 
     SyntaxLisp *syntax = new SyntaxLisp(document());
@@ -64,7 +64,7 @@ Editor::~Editor(){
 void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(_extensionBar);
-    painter.fillRect(event->rect(), Qt::lightGray);
+    painter.fillRect(event->rect(), Qt::white);
 
 
     QTextBlock block = firstVisibleBlock();
@@ -75,7 +75,7 @@ void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
+            painter.setPen(Qt::gray);
             painter.drawText(0, top, _extensionBar->width(), fontMetrics().height(),
                              Qt::AlignRight, number);
         }
@@ -96,7 +96,7 @@ int Editor::LineNumberAreaWidth()
         ++digits;
     }
 
-    int space = 4 + fontMetrics().width(QLatin1Char('9')) * digits;
+    int space = 16 + fontMetrics().width(QLatin1Char('9')) * digits;
 
     return space;
 }
@@ -139,6 +139,15 @@ QString Editor::Content()
     return toPlainText();
 }
 
+QString Editor::Path()
+{
+    if(_source){
+        return _source->Path();
+    }
+
+    return "";
+}
+
 bool Editor::Save()
 {
     if (!_source->IsNew())
@@ -146,11 +155,12 @@ bool Editor::Save()
         if (_source->Save(Content()))
         {
             document()->setModified(false);
+            return true;
         }
     }
     else
     {
-        SaveAs();
+        return SaveAs();
     }
 }
 
@@ -162,8 +172,10 @@ bool Editor::SaveAs()
         if(_source->SaveAs(name, Content()))
         {
             document()->setModified(false);
+            return true;
         }
     }
+    return false;
 }
 
 void Editor::resizeEvent(QResizeEvent *event)

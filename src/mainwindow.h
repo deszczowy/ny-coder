@@ -13,6 +13,7 @@
 #include <QTreeWidgetItem>
 
 #include "controller.h"
+#include "projecttree.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,32 +26,47 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+public:
     void closeEvent(QCloseEvent *event);
 
+/*
+    The nyquist output management
+*/
 private slots:
-
     void onStdoutAvailable();
     void onFinished(int, QProcess::ExitStatus);
-    void on_goButton_clicked();
-    void on_breakButton_clicked();
 
+/*
+    The project structure
+*/
+private:
+    ProjectTree *_project;
 
+private slots:
+    void onProjectElementSelection(QTreeWidgetItem *item, int column);
 
-    void on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column);
-
-    void on_clearOutput_clicked();
-
-    void on_refreshOutput_clicked();
-    void ShowContextMenu(const QPoint &pos);
-
-    void on_menuButton_clicked();
-
+/*
+    The main ui section
+*/
 private:
     Ui::MainWindow *ui;
     Controller _controller;
     
     QSplitter *mainSplitter;
     QSplitter *editorSplitter;
+
+    void BaseUiSettings();
+    void EditorsSettings();
+    void OutputSettings();
+    void ConnectSlots();
+
+private slots:
+    void onGo();
+    void onBreak();
+    void onMenu();
+    void onClear();
+    void onRefresh();
 
 /*
     The menu section,
@@ -65,6 +81,7 @@ private:
     QAction* miQuitApplication;
     QAction* miRunCurrentFile;
 
+    void ShowContextMenu(const QPoint &pos);
     void BuildMenuActionsStructure();
     void BindMenuItemsWithSlots();
     void DestroyMenuItems();
@@ -74,7 +91,6 @@ private slots:
     void onSaveCurrentFile();
     void onSaveAllFiles();
     void onQuitApplication();
-    void onRunCurrentFile();
 
 };
 

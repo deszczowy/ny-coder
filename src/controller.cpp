@@ -14,21 +14,22 @@ void Controller::Start()
     _nyquist.Run();
 }
 
+void Controller::Restart()
+{
+    _nyquist.Restart();
+}
+
 void Controller::Shutdown()
 {
     _nyquist.Quit();
 }
 
-bool Controller::ExecuteFile(QUuid sourceUuid)
-{/*
-    SourceFile *file = _sources.Find(sourceUuid);
+void Controller::Break()
+{
+    _nyquist.Break();
+}
 
-    if (file)
-    {
-        if (file->IsNew())
-        {
-            file->SaveAs();
-        }
-        _nyquist.LoadFile(fileName);
-    }*/
+bool Controller::ExecuteFile(QString sourceFile)
+{
+    _nyquist.LoadFile(sourceFile);
 }

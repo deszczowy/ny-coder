@@ -10,16 +10,13 @@ class Controller
 public:
     Controller();
 
+    // Nyquist interaction
     QProcess *GetNyquistProcess();
-
     void Start();
+    void Restart();
     void Shutdown();
-
-    // actions on files
-    bool NewFile(QUuid sourceUuid);
-    bool SaveFile(QUuid sourceUuid);
-    bool ExecuteFile(QUuid sourceUuid);
-    bool CloseFile(QUuid sourceUuid);
+    void Break();
+    bool ExecuteFile(QString sourceFile);
 
 private:
     Nyquist _nyquist;

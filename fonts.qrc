@@ -4,5 +4,9 @@
     </qresource>
     <qresource prefix="/license">
         <file>res/fonts/inconsolata_license.txt</file>
+        <file>res/fonts/quicksand_license.txt</file>
+    </qresource>
+    <qresource prefix="/ttf">
+        <file>res/fonts/quicksand.ttf</file>
     </qresource>
 </RCC>

@@ -27,9 +27,12 @@ public:
 
 
     QString Content();
+    QString Path();
 
     bool Save();
     bool SaveAs();
+
+
 
 protected:
     void resizeEvent(QResizeEvent *event) override;

@@ -34,7 +34,7 @@ bool SourceFile::IsNew()
 
 void SourceFile::LoadSourceFile(QString path)
 {
-    QFile file(_path);
+    QFile file(path);
     if (file.open(QFile::ReadOnly | QIODevice::Text))
     {
         _path = path;

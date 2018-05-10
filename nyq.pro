@@ -33,7 +33,8 @@ SOURCES += \
     src/editor/extensionbar.cpp \
     src/controller.cpp \
     src/nyquist.cpp \
-    src/sourcefile.cpp
+    src/sourcefile.cpp \
+    src/storage/storagefile.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -45,7 +46,8 @@ HEADERS += \
     src/controller.h \
     src/action.h \
     src/nyquist.h \
-    src/sourcefile.h
+    src/sourcefile.h \
+    src/storage/storagefile.h
 
 FORMS += \
         src/mainwindow.ui

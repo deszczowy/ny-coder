@@ -15,35 +15,23 @@
 
 #include <src/editor/editor.h>
 
+//
+//
+// Lifetime
+//
+//
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
-
-
-
-    //
-    mainSplitter = new QSplitter(this);
-    mainSplitter->addWidget(ui->navigatorPane);
-    mainSplitter->addWidget(ui->editorPane);
-    mainSplitter->addWidget(ui->outputPane);
-    setCentralWidget(mainSplitter);
-
-    ui->editorMain->setTabsClosable(true);
-    ui->editorAdditional->setTabsClosable(true);
-    ui->editorAdditional->hide();
-
-BuildMenuActionsStructure();
-
-    connect(_controller.GetNyquistProcess(), SIGNAL(readyReadStandardOutput()), this, SLOT(onStdoutAvailable()) );
-    connect(_controller.GetNyquistProcess(), SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(onFinished(int, QProcess::ExitStatus)) );
-
-ui->outputArea->setFont(QFont("courier"));
+    BaseUiSettings();
+    EditorsSettings();
+    OutputSettings();
+    ConnectSlots();
+    BuildMenuActionsStructure();
 
     _controller.Start();
-
-    showMaximized();
 }
 
 MainWindow::~MainWindow()
@@ -52,17 +40,159 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+//
+//
+// UI Settings
+//
+//
 
+void MainWindow::BaseUiSettings()
+{
+    ui->setupUi(this);
+    mainSplitter = new QSplitter(this);
+    mainSplitter->addWidget(ui->navigatorPane);
+    mainSplitter->addWidget(ui->editorPane);
+    mainSplitter->addWidget(ui->outputPane);
+    setCentralWidget(mainSplitter);
+    showMaximized();
+}
+
+void MainWindow::EditorsSettings()
+{
+    ui->editorMain->setTabsClosable(true);
+    ui->editorAdditional->setTabsClosable(true);
+    ui->editorAdditional->hide();
+}
+
+void MainWindow::OutputSettings()
+{
+    ui->outputArea->setFont(QFont("Courier", 12, 1));
+}
+
+void MainWindow::ConnectSlots()
+{
+    // nyquist output
+    connect(_controller.GetNyquistProcess(), SIGNAL(readyReadStandardOutput()), this, SLOT(onStdoutAvailable()) );
+    connect(_controller.GetNyquistProcess(), SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(onFinished(int, QProcess::ExitStatus)) );
+
+    // transport buttons
+    connect(ui->goButton, SIGNAL(clicked(bool)), this, SLOT(onGo()) );
+    connect(ui->breakButton, SIGNAL(clicked(bool)), this, SLOT(onBreak()) );
+    connect(ui->menuButton, SIGNAL(clicked(bool)), this, SLOT(onMenu()) );
+
+    // output buttons
+    connect(ui->clearOutput, SIGNAL(clicked(bool)), this, SLOT(onClear()) );
+    connect(ui->refreshOutput, SIGNAL(clicked(bool)), this, SLOT(onRefresh()) );
+
+    // project
+    connect(ui->projectStructureView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onProjectElementSelection(QTreeWidgetItem*,int)) );
+}
+
+//
+//
+// Events
+//
+//
 
 void MainWindow::closeEvent(QCloseEvent *event){
     onQuitApplication();
 }
 
+//
+//
+// Slots
+//
+//
+
 void MainWindow::onStdoutAvailable(){
     QByteArray data = _controller.GetNyquistProcess()->readAllStandardOutput();
     ui->outputArea->append(QString(data));
 }
+
 void MainWindow::onFinished(int, QProcess::ExitStatus){}
+
+void MainWindow::onGo()
+{
+    Editor *e = (Editor*)ui->editorMain->currentWidget();
+    bool canGo = true;
+
+    if (e)
+    {
+        if (e->document()->isModified()){
+            canGo = e->Save();
+        }
+
+        if (canGo)
+        {
+            QString localSrc = (e)->Path();
+            if (localSrc != "")
+            {
+                _controller.ExecuteFile(localSrc);
+            }
+        }
+    }
+}
+
+void MainWindow::onBreak()
+{
+    _controller.Break();
+}
+
+void MainWindow::onMenu()
+{
+    QPoint p(
+        ui->menuButton->pos().x() + 2,
+        ui->menuButton->pos().y() + ui->menuButton->height() + 2
+    );
+    ShowContextMenu(p);
+}
+
+void MainWindow::onClear()
+{
+    ui->outputArea->clear();
+}
+
+void MainWindow::onRefresh()
+{
+    _controller.Restart();
+}
+
+void MainWindow::onOpenFolder()
+{
+    QStringList extensions;
+    extensions << ".lsp" << ".lisp";
+
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (dir != "")
+    {
+        ui->projectStructureView->clear();
+        _project = new ProjectTree(ui->projectStructureView, dir, extensions);
+    }
+}
+
+void MainWindow::onSaveCurrentFile()
+{
+    std::cout << "Save current";
+}
+
+void MainWindow::onSaveAllFiles()
+{
+    std::cout << "Save all";
+}
+
+void MainWindow::onQuitApplication()
+{
+    _controller.Shutdown();
+}
+
+void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int column)
+{
+    ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
+    if (sourceFile){
+        Editor *page = new Editor(this, sourceFile->getFilePath());
+        ui->editorMain->addTab(page, sourceFile->getFileName());
+    }
+}
 
 //
 //
@@ -100,6 +230,7 @@ void MainWindow::BuildMenuActionsStructure()
 void MainWindow::BindMenuItemsWithSlots()
 {
     connect(miOpenFolder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
+    connect(miRunCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onGo()));
 }
 
 void MainWindow::DestroyMenuItems()
@@ -113,98 +244,10 @@ void MainWindow::DestroyMenuItems()
     delete mainMenu;
 }
 
+//
+//
+// Project management
+//
+//
 
 
-
-
-
-
-
-
-
-
-void MainWindow::on_goButton_clicked()
-{
-    /*
-        QString localSrc =
-        ((Editor*)ui->editorMain->currentWidget())->Path();
-
-        std::string ba = ((Editor*)ui->editorMain->currentWidget())->GetContent().toStdString();
-
-
-
-        _controller.ExecuteFile(localSrc);
-        */
-}
-
-
-
-
-
-void MainWindow::on_breakButton_clicked()
-{
-
-}
-
-void MainWindow::onOpenFolder()
-{
-    QStringList extensions;
-    extensions << ".lsp" << ".lisp";
-
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    ProjectTree tree(ui->projectStructureView, dir, extensions);
-}
-
-void MainWindow::onSaveCurrentFile()
-{
-    std::cout << "Save current";
-}
-
-void MainWindow::onSaveAllFiles()
-{
-    std::cout << "Save all";
-}
-
-void MainWindow::onQuitApplication()
-{
-    _controller.Shutdown();
-}
-
-void MainWindow::onRunCurrentFile()
-{
-    std::cout << "Run";
-}
-
-void MainWindow::on_projectStructureView_itemDoubleClicked(QTreeWidgetItem *item, int column)
-{
-    ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
-    if (sourceFile){
-        /*
-        EditorPage *page = new EditorPage;
-        page->loadFile(sourceFile->getFilePath());
-        ui->editorMain->addTab(page, sourceFile->getFileName());
-        */
-        Editor *page = new Editor(this, sourceFile->getFilePath());
-        ui->editorMain->addTab(page, sourceFile->getFileName());
-    }
-}
-
-void MainWindow::on_clearOutput_clicked()
-{
-    ui->outputArea->clear();
-}
-
-void MainWindow::on_refreshOutput_clicked()
-{
-    ui->outputArea->clear();
-
-}
-
-void MainWindow::on_menuButton_clicked()
-{
-    QPoint p(
-        ui->menuButton->pos().x() + 2,
-        ui->menuButton->pos().y() + ui->menuButton->height() + 2
-    );
-    ShowContextMenu(p);
-}
