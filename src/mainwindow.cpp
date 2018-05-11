@@ -1,8 +1,8 @@
 #include "mainwindow.h"
 #include <ui_mainwindow.h>
 
-#include "projecttree.h"
 #include "projectitem.h"
+#include "styler.h"
 
 #include <fstream>
 #include <iostream>
@@ -15,6 +15,8 @@
 
 #include <src/editor/editor.h>
 
+#include <src/storage/storagefile.h>
+
 //
 //
 // Lifetime
@@ -26,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     BaseUiSettings();
+    SetupTheme();
     EditorsSettings();
     OutputSettings();
     ConnectSlots();
@@ -86,6 +89,12 @@ void MainWindow::ConnectSlots()
 
     // project
     connect(ui->projectStructureView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onProjectElementSelection(QTreeWidgetItem*,int)) );
+}
+
+void MainWindow::SetupTheme()
+{
+    Styler styler;
+    setStyleSheet(styler.CssMain());
 }
 
 //

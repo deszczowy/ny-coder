@@ -9,4 +9,7 @@
     <qresource prefix="/ttf">
         <file>res/fonts/quicksand.ttf</file>
     </qresource>
+    <qresource prefix="/css">
+        <file>res/styles/main.css</file>
+    </qresource>
 </RCC>

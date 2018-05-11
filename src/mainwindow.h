@@ -61,6 +61,8 @@ private:
     void OutputSettings();
     void ConnectSlots();
 
+    void SetupTheme();
+
 private slots:
     void onGo();
     void onBreak();

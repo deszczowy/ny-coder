@@ -1,0 +1,141 @@
+QWidget
+{
+	background-color: $background;
+	color: $font;
+	border: 0;
+}
+
+/*
+
+	Tab widget
+*/
+
+QTabWidget::pane 
+{
+	border: 0px solid red;
+	border-radius: 0px;
+	background-color: $background;
+}
+
+QTabWidget::tab-bar
+{
+	left: 0px;
+}
+
+
+QTabBar::tab
+{
+	border: 0;
+	border-radius: 0;
+	min-width: 8ex;
+	padding: 10px;
+	background-color: $background;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover
+{
+
+}
+
+QTabBar::tab:selected
+{
+	border-bottom: 2px solid $border;
+}
+
+QTabBar::tab:!selected
+{
+	margin-top: 4px;
+	background-color: $border;
+}
+
+
+/*
+	Controls
+*/
+
+QPushButton
+{
+	border: 1px solid $border;
+	border-radius: 0;
+	padding: 5px;
+	min-width: 60px;
+	font-family: 'URW Gothic L';
+	font-size: 16px;
+	color: $font;
+}
+
+QComboBox
+{
+	border: 1px solid $border;
+	border-radius: 0;
+	padding: 5px;
+}
+
+
+/*
+	Frames
+*/
+
+QFrame#outputPane
+{
+	border-left:1px solid $border;
+}
+
+QFrame#editorPane
+{
+	border-left:1px solid $border;
+}
+
+
+/*
+	Every widget scrollbar
+*/
+
+QScrollBar:vertical
+{
+	border: 0;
+	background: $background;
+	width:10px;
+	margin: 0;
+}
+
+QScrollBar::handle:vertical
+{
+	min-height: 0px;
+	background-color: $border;
+	border-radius: 4px;
+}
+
+QScrollBar::add-line:vertical
+{
+	height: 0px;
+	subcontrol-position: bottom;
+	subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical
+{
+	height: 0 px;
+	subcontrol-position: top;
+	subcontrol-origin: margin;
+}
+
+
+/*
+	Menus
+*/
+
+QMenu
+{
+	padding: 5px;
+}
+
+QMenu::item
+{
+	padding: 5px;
+}
+
+QMenu::item:selected
+{
+	color: $border;
+}

@@ -34,7 +34,9 @@ SOURCES += \
     src/controller.cpp \
     src/nyquist.cpp \
     src/sourcefile.cpp \
-    src/storage/storagefile.cpp
+    src/storage/storagefile.cpp \
+    src/styler.cpp \
+    src/toolbox.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -47,10 +49,12 @@ HEADERS += \
     src/action.h \
     src/nyquist.h \
     src/sourcefile.h \
-    src/storage/storagefile.h
+    src/storage/storagefile.h \
+    src/styler.h \
+    src/toolbox.h
 
 FORMS += \
         src/mainwindow.ui
 
 RESOURCES += \
-    fonts.qrc
+    resources.qrc
