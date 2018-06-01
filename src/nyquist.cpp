@@ -70,8 +70,12 @@ void Nyquist::Start()
 
     if(_process)
     {
-        _process->start("ny", QIODevice::ReadWrite);
         _isRunning = true;
+        #if defined(Q_OS_WIN)
+        _process->start("D:\\Programy\\Nyquist\\jnyqide\\nyquist.exe", QIODevice::ReadWrite);
+        #else
+        _process->start("ny", QIODevice::ReadWrite);
+        #endif
     }
 }
 
