@@ -69,6 +69,7 @@ private slots:
     void onMenu();
     void onClear();
     void onRefresh();
+    void onTest();
 
 /*
     The menu section,
@@ -82,6 +83,7 @@ private:
     QAction* miSaveAllFiles;
     QAction* miQuitApplication;
     QAction* miRunCurrentFile;
+    QAction* miTest;
 
     void ShowContextMenu(const QPoint &pos);
     void BuildMenuActionsStructure();

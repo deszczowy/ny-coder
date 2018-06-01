@@ -166,6 +166,14 @@ void MainWindow::onRefresh()
     _controller.Restart();
 }
 
+void MainWindow::onTest()
+{
+    QStringList extensions;
+    extensions << ".lsp" << ".lisp";
+    ui->projectStructureView->clear();
+    _project = new ProjectTree(ui->projectStructureView, "D:\\Programy\\Nyquist\\jnyqide\\Nyq", extensions);
+}
+
 void MainWindow::onOpenFolder()
 {
     QStringList extensions;
@@ -226,12 +234,14 @@ void MainWindow::BuildMenuActionsStructure()
     miSaveAllFiles    = new QAction("Save all files", this);
     miQuitApplication = new QAction("Quit", this);
     miRunCurrentFile  = new QAction("Run", this);
+    miTest            = new QAction("Test", this);
 
     mainMenu->addAction(miOpenFolder);
     mainMenu->addAction(miSaveCurrentFile);
     mainMenu->addAction(miSaveAllFiles);
     mainMenu->addAction(miRunCurrentFile);
     mainMenu->addAction(miQuitApplication);
+    mainMenu->addAction(miTest);
 
     BindMenuItemsWithSlots();
 }
@@ -240,6 +250,7 @@ void MainWindow::BindMenuItemsWithSlots()
 {
     connect(miOpenFolder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
     connect(miRunCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onGo()));
+    connect(miTest, SIGNAL(triggered(bool)), this, SLOT(onTest()));
 }
 
 void MainWindow::DestroyMenuItems()
