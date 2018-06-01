@@ -12,9 +12,9 @@ QString Styler::CssMain()
 {
     QString css = Toolbox::FileContent(":/css/res/styles/main.css");
 
-    Toolbox::ReplaceAll(css, "$background", _theme->Value("background", "#f00"));
-    Toolbox::ReplaceAll(css, "$font", _theme->Value("font", "#00f"));
-    Toolbox::ReplaceAll(css, "$border", _theme->Value("border", "#0f0"));
+    Toolbox::ReplaceAll(css, "$background", _theme->Value("background", "#59525C"));
+    Toolbox::ReplaceAll(css, "$font", _theme->Value("font", "#B4A0AC"));
+    Toolbox::ReplaceAll(css, "$border", _theme->Value("border", "#6DB1C8"));
 
     return css;
 }

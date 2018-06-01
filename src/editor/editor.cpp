@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "editor.h"
 #include "extensionbar.h"
 
@@ -12,7 +14,6 @@
 #include <QFileDialog>
 
 #include <src/syntaxlisp.h>
-#include <src/sourcefile.h>
 
 /*
 QWidget
@@ -58,7 +59,6 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
 }
 
 Editor::~Editor(){
-    delete _source;
 }
 
 void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
@@ -130,8 +130,20 @@ QCompleter *Editor::GetCompleter() const
 
 void Editor::LoadFile(QString path)
 {
-    _source = new SourceFile(path);
-    document()->setPlainText(_source->Content());
+    QString content("");
+    _path = "";
+    _untitled = true;
+
+    QFile file(path);
+    if (file.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        _path = path;
+        _untitled = false;
+
+        QTextStream in(&file);
+        content = in.readAll();
+    }
+    document()->setPlainText(content);
 }
 
 QString Editor::Content()
@@ -141,18 +153,18 @@ QString Editor::Content()
 
 QString Editor::Path()
 {
-    if(_source){
-        return _source->Path();
-    }
-
-    return "";
+    return _path;
 }
 
 bool Editor::Save()
 {
-    if (!_source->IsNew())
+    if (!IsNew())
     {
-        if (_source->Save(Content()))
+        std::ofstream out(_path.toStdString());
+        out << Content().toStdString();
+        out.close();
+
+        if (!out.bad())
         {
             document()->setModified(false);
             return true;
@@ -169,13 +181,21 @@ bool Editor::SaveAs()
     QString name = QFileDialog::getSaveFileName(0, tr("Save file as..."), "~/", tr("Lisp source files (*.lsp)"));
     if (name != "")
     {
-        if(_source->SaveAs(name, Content()))
+        _path = name;
+        _untitled = false;
+
+        if(Save())
         {
             document()->setModified(false);
             return true;
         }
     }
     return false;
+}
+
+bool Editor::IsNew()
+{
+    return _untitled;
 }
 
 void Editor::resizeEvent(QResizeEvent *event)

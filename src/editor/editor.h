@@ -10,8 +10,6 @@ class QPaintEvent;
 class QResizeEvent;
 class QWidget;
 
-class SourceFile;
-
 class Editor : public QPlainTextEdit
 {
     Q_OBJECT
@@ -31,6 +29,7 @@ public:
 
     bool Save();
     bool SaveAs();
+    bool IsNew();
 
 
 
@@ -51,7 +50,8 @@ private:
     QAbstractItemModel *completionModel;
     QCompleter *completer;
 
-    SourceFile *_source;
+    QString _path;
+    bool _untitled;
 
     QString TextUnderCursor() const;
     QAbstractItemModel *modelFromFile(const QString & fileName);
