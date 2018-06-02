@@ -13,6 +13,7 @@
 #include <QApplication>
 #include <QFileDialog>
 
+#include <src/styler.h>
 #include <src/syntaxlisp.h>
 
 /*
@@ -63,8 +64,10 @@ Editor::~Editor(){
 
 void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
 {
+    Styler styler;
+
     QPainter painter(_extensionBar);
-    painter.fillRect(event->rect(), Qt::white);
+    painter.fillRect(event->rect(), styler.Background());
 
 
     QTextBlock block = firstVisibleBlock();
@@ -75,7 +78,7 @@ void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::gray);
+            painter.setPen(styler.Font());
             painter.drawText(0, top, _extensionBar->width(), fontMetrics().height(),
                              Qt::AlignRight, number);
         }
@@ -276,7 +279,8 @@ void Editor::SelectCurrentLine()
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(Qt::lightGray).lighter(125);
+        Styler styler;
+        QColor lineColor = styler.Highlight();
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);

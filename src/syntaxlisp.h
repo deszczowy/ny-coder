@@ -2,6 +2,8 @@
 #define SYNTAXLISP_H
 
 
+#include "styler.h"
+
 #include <QSyntaxHighlighter>
 #include <QTextCharFormat>
 #include <QRegularExpression>
@@ -37,6 +39,7 @@ private:
     QTextCharFormat quotationFormat;
 
     QTextCharFormat listDelimiter;
+    Styler styler;
 
     void ApplyLispMethodRules(HighlightingRule &rule);
     void ApplyNyquistMethodRule(HighlightingRule &rule);

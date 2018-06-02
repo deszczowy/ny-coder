@@ -50,7 +50,7 @@ void SyntaxLisp::highlightBlock(const QString &text)
 void SyntaxLisp::ApplyLispMethodRules(HighlightingRule &rule)
 {
     // style
-    lispMethodsFormat.setForeground(Qt::darkGreen);
+    lispMethodsFormat.setForeground(styler.Lisp());
     lispMethodsFormat.setFontWeight(QFont::Bold);
 
     // words
@@ -76,7 +76,7 @@ void SyntaxLisp::ApplyLispMethodRules(HighlightingRule &rule)
 void SyntaxLisp::ApplyNyquistMethodRule(HighlightingRule &rule)
 {
     // style
-    nyquistMethodsFormat.setForeground(Qt::darkBlue);
+    nyquistMethodsFormat.setForeground(styler.Nyquist());
     nyquistMethodsFormat.setFontWeight(QFont::Bold);
 
     // words
@@ -103,12 +103,12 @@ void SyntaxLisp::ApplyBlockCommentRule(HighlightingRule &rule)
 {
     commentStartExpression = QRegularExpression("#\\|");
     commentEndExpression = QRegularExpression("\\|#");
-    multiLineCommentFormat.setForeground(Qt::darkGray);
+    multiLineCommentFormat.setForeground(styler.Comment());
 }
 
 void SyntaxLisp::ApplyInlineCommentRule(HighlightingRule &rule)
 {
-    singleLineCommentFormat.setForeground(Qt::darkGray);
+    singleLineCommentFormat.setForeground(styler.Comment());
     rule.pattern = QRegularExpression(";[^\n]*");
     rule.format = singleLineCommentFormat;
     highlightingRules.append(rule);
@@ -116,7 +116,7 @@ void SyntaxLisp::ApplyInlineCommentRule(HighlightingRule &rule)
 
 void SyntaxLisp::ApplyListRule(HighlightingRule &rule)
 {
-    listDelimiter.setForeground(Qt::gray);
+    listDelimiter.setForeground(styler.Parenthesis());
     rule.pattern = QRegularExpression("\\(");
     rule.format = listDelimiter;
     highlightingRules.append(rule);
@@ -128,7 +128,7 @@ void SyntaxLisp::ApplyListRule(HighlightingRule &rule)
 
 void SyntaxLisp::ApplyQuotationRule(HighlightingRule &rule)
 {
-    quotationFormat.setForeground(Qt::darkRed);
+    quotationFormat.setForeground(styler.Text());
     rule.pattern = QRegularExpression("\".+\"");
     rule.format = quotationFormat;
     highlightingRules.append(rule);
