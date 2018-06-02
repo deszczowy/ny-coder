@@ -17,6 +17,7 @@ QString Styler::CssMain()
     Toolbox::ReplaceAll(css, "$background", _theme->Value("background", "#2d384e"));
     Toolbox::ReplaceAll(css, "$font", _theme->Value("font", "#9fbac3"));
     Toolbox::ReplaceAll(css, "$border", _theme->Value("border", "#3b5787"));
+    Toolbox::ReplaceAll(css, "$string", _theme->Value("string", "#ecece7"));
 
     return css;
 }

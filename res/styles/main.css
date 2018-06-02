@@ -137,5 +137,5 @@ QMenu::item
 
 QMenu::item:selected
 {
-	color: $border;
+        color: $string;
 }
