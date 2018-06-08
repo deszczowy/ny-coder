@@ -2,6 +2,7 @@
 #include <ui_mainwindow.h>
 
 #include "projectitem.h"
+#include "storage.h"
 #include "styler.h"
 
 #include <fstream>
@@ -9,6 +10,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include <QCloseEvent>
 
@@ -35,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     BuildMenuActionsStructure();
 
     _controller.Start();
+
+    qDebug() << Storage::getInstance().lispWordsRegEx();
 }
 
 MainWindow::~MainWindow()
@@ -86,6 +90,9 @@ void MainWindow::ConnectSlots()
     // output buttons
     connect(ui->clearOutput, SIGNAL(clicked(bool)), this, SLOT(onClear()) );
     connect(ui->refreshOutput, SIGNAL(clicked(bool)), this, SLOT(onRefresh()) );
+
+    // editors
+    connect(ui->editorMain, SIGNAL(tabCloseRequested(int)), this, SLOT(onCLoseTab(int)));
 
     // project
     connect(ui->projectStructureView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onProjectElementSelection(QTreeWidgetItem*,int)) );
@@ -271,3 +278,36 @@ void MainWindow::DestroyMenuItems()
 //
 
 
+//
+//
+// Editor tabs
+//
+//
+
+void MainWindow::onCLoseTab(int index)
+{
+    Editor *e = (Editor*)ui->editorMain->currentWidget();
+    if (e->document()->isModified()) {
+
+        int ret = QMessageBox::question(this, tr("Question"),
+                                       tr("The document has been modified.\n"
+                                          "Do you want to save your changes?"),
+                                       QMessageBox::Save | QMessageBox::Discard
+                                       | QMessageBox::Cancel,
+                                       QMessageBox::Save);
+        bool go = false;
+        switch (ret) {
+        case QMessageBox::Save:
+            go = e->Save();
+            break;
+        case QMessageBox::Discard:
+            go = true;
+            break;
+        default:
+            break;
+        }
+        if (go){
+            ui->editorMain->removeTab(index);
+        }
+    }
+}

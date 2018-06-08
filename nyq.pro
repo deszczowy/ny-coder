@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -35,7 +35,8 @@ SOURCES += \
     src/nyquist.cpp \
     src/storage/storagefile.cpp \
     src/styler.cpp \
-    src/toolbox.cpp
+    src/toolbox.cpp \
+    src/storage.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -49,7 +50,8 @@ HEADERS += \
     src/nyquist.h \
     src/storage/storagefile.h \
     src/styler.h \
-    src/toolbox.h
+    src/toolbox.h \
+    src/storage.h
 
 FORMS += \
         src/mainwindow.ui

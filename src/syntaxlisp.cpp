@@ -1,4 +1,7 @@
 #include "syntaxlisp.h"
+#include "storage.h"
+
+#include <QDebug>
 
 SyntaxLisp::SyntaxLisp(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -11,6 +14,7 @@ SyntaxLisp::SyntaxLisp(QTextDocument *parent)
     ApplyInlineCommentRule(rule);
     ApplyListRule(rule);
     ApplyQuotationRule(rule);
+    ApplyGlobalVariableRule(rule);
 }
 
 
@@ -49,21 +53,16 @@ void SyntaxLisp::highlightBlock(const QString &text)
 
 void SyntaxLisp::ApplyLispMethodRules(HighlightingRule &rule)
 {
+    //
     // style
     lispMethodsFormat.setForeground(styler.Lisp());
     lispMethodsFormat.setFontWeight(QFont::Bold);
 
-    // words
-    QStringList keywordPatterns;
-    keywordPatterns
-            << "\\blist\\b"
-            << "\\bclass\\b"
-            << "\\bdot\\b>"
-    ;
-
+    //QStringList words = (QStringList);
     // applying rule
-    foreach (const QString &pattern, keywordPatterns)
+    foreach (const QString &pattern, Storage::getInstance().lispWordsRegEx())
     {
+        qDebug() << pattern;
         rule.pattern = QRegularExpression(
             pattern,
             QRegularExpression::CaseInsensitiveOption
@@ -79,17 +78,13 @@ void SyntaxLisp::ApplyNyquistMethodRule(HighlightingRule &rule)
     nyquistMethodsFormat.setForeground(styler.Nyquist());
     nyquistMethodsFormat.setFontWeight(QFont::Bold);
 
-    // words
-    QStringList keywordPatterns;
-    keywordPatterns
-            << "\\bplay\\b"
-            << "\\bload\\b"
-            << "\\bget\\b>"
-    ;
+    // select '<< "\\(' || help || '\\b"' from nldata where source = 'N' order by word desc;
 
+    QStringList words(Storage::getInstance().nyquistWordsRegEx());
     // applying rule
-    foreach (const QString &pattern, keywordPatterns)
+    foreach (const QString &pattern, words)
     {
+        qDebug() << pattern;
         rule.pattern = QRegularExpression(
             pattern,
             QRegularExpression::CaseInsensitiveOption
@@ -129,7 +124,15 @@ void SyntaxLisp::ApplyListRule(HighlightingRule &rule)
 void SyntaxLisp::ApplyQuotationRule(HighlightingRule &rule)
 {
     quotationFormat.setForeground(styler.Text());
-    rule.pattern = QRegularExpression("\".+\"");
+    rule.pattern = QRegularExpression("\".+?\"");
     rule.format = quotationFormat;
+    highlightingRules.append(rule);
+}
+
+void SyntaxLisp::ApplyGlobalVariableRule(SyntaxLisp::HighlightingRule &rule)
+{
+    globalFormat.setForeground(styler.Global());
+    rule.pattern = QRegularExpression("\\*.+?\\*");
+    rule.format = globalFormat;
     highlightingRules.append(rule);
 }

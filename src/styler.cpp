@@ -52,6 +52,11 @@ QColor Styler::Highlight()
     return QColor(_theme->Value("selected-line", "#35435d"));
 }
 
+QColor Styler::Global()
+{
+    return QColor(_theme->Value("global", "#c39f9f"));
+}
+
 QColor Styler::Background()
 {
     return QColor(_theme->Value("background", "#2d384e"));

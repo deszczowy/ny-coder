@@ -21,6 +21,7 @@ public:
     QColor Text();
     QColor Comment();
     QColor Highlight();
+    QColor Global();
 
     // UI
 

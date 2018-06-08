@@ -37,6 +37,7 @@ private:
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat multiLineCommentFormat;
     QTextCharFormat quotationFormat;
+    QTextCharFormat globalFormat;
 
     QTextCharFormat listDelimiter;
     Styler styler;
@@ -47,6 +48,7 @@ private:
     void ApplyInlineCommentRule(HighlightingRule &rule);
     void ApplyListRule(HighlightingRule &rule);
     void ApplyQuotationRule(HighlightingRule &rule);
+    void ApplyGlobalVariableRule(HighlightingRule &rule);
 };
 
 #endif // SYNTAXLISP_H

@@ -12,4 +12,11 @@
     <qresource prefix="/css">
         <file>res/styles/main.css</file>
     </qresource>
+    <qresource prefix="/db">
+        <file>res/db/words.sqlite</file>
+    </qresource>
+    <qresource prefix="/icon">
+        <file>res/ico/close-tab-hover.png</file>
+        <file>res/ico/close-tab-normal.png</file>
+    </qresource>
 </RCC>

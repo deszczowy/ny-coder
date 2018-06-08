@@ -96,6 +96,12 @@ private slots:
     void onSaveAllFiles();
     void onQuitApplication();
 
+/*
+    Tabs section
+*/
+private:
+private slots:
+    void onCLoseTab(int index);
 };
 
 #endif // MAINWINDOW_H
