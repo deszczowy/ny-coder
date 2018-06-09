@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QShortcut>
 
 #include <QCloseEvent>
 
@@ -35,10 +36,10 @@ MainWindow::MainWindow(QWidget *parent) :
     OutputSettings();
     ConnectSlots();
     BuildMenuActionsStructure();
+    BindShortcuts();
 
+    OpenNewTab("New", ""); //
     _controller.Start();
-
-    qDebug() << Storage::getInstance().lispWordsRegEx();
 }
 
 MainWindow::~MainWindow()
@@ -69,6 +70,8 @@ void MainWindow::EditorsSettings()
     ui->editorMain->setTabsClosable(true);
     ui->editorAdditional->setTabsClosable(true);
     ui->editorAdditional->hide();
+
+    ui->projectStructureView->header()->hide();
 }
 
 void MainWindow::OutputSettings()
@@ -96,6 +99,13 @@ void MainWindow::ConnectSlots()
 
     // project
     connect(ui->projectStructureView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onProjectElementSelection(QTreeWidgetItem*,int)) );
+}
+
+void MainWindow::BindShortcuts()
+{
+    new QShortcut(QKeySequence("F5"), this, SLOT(onGo()));
+    new QShortcut(QKeySequence("F1"), this, SLOT(onTest()));
+    new QShortcut(QKeySequence("F10"), this, SLOT(onBreak()));
 }
 
 void MainWindow::SetupTheme()
@@ -126,6 +136,13 @@ void MainWindow::onStdoutAvailable(){
 }
 
 void MainWindow::onFinished(int, QProcess::ExitStatus){}
+
+void MainWindow::OpenNewTab(QString fileName, QString path)
+{
+    Editor *page = new Editor(ui->editorMain, path);
+    int idx = ui->editorMain->addTab(page, fileName);
+    page->SetContext(idx, ui->editorMain);
+}
 
 void MainWindow::onGo()
 {
@@ -213,8 +230,10 @@ void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int column)
 {
     ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
     if (sourceFile){
-        Editor *page = new Editor(this, sourceFile->getFilePath());
-        ui->editorMain->addTab(page, sourceFile->getFileName());
+        OpenNewTab(
+                    sourceFile->getFileName(),
+                    sourceFile->getFilePath()
+        );
     }
 }
 

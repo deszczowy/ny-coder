@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QCompleter>
 #include <QUuid>
+#include <QTabWidget>
 
 class QPaintEvent;
 class QResizeEvent;
@@ -31,11 +32,12 @@ public:
     bool SaveAs();
     bool IsNew();
 
-
+    void SetContext(int index, QTabWidget *widget);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
     void focusInEvent(QFocusEvent *event) override;
 
 private slots:
@@ -52,6 +54,11 @@ private:
 
     QString _path;
     bool _untitled;
+    int _index;
+    QTabWidget *_pages;
+
+    QString _indent;
+    void CalculateIndent();
 
     QString TextUnderCursor() const;
     QAbstractItemModel *modelFromFile(const QString & fileName);

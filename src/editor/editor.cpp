@@ -190,6 +190,11 @@ bool Editor::SaveAs()
         if(Save())
         {
             document()->setModified(false);
+
+
+            QString fn = QFileInfo(name).fileName();
+            _pages->setTabText(_index, fn);
+
             return true;
         }
     }
@@ -199,6 +204,12 @@ bool Editor::SaveAs()
 bool Editor::IsNew()
 {
     return _untitled;
+}
+
+void Editor::SetContext(int index, QTabWidget *widget)
+{
+    _index = index;
+    _pages = widget;
 }
 
 void Editor::resizeEvent(QResizeEvent *event)
@@ -223,6 +234,10 @@ void Editor::keyPressEvent(QKeyEvent *event)
         default:
             break;
         }
+    }
+
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        CalculateIndent();
     }
 
     // shortcut = ctrl+e
@@ -257,6 +272,13 @@ void Editor::keyPressEvent(QKeyEvent *event)
                   );
 
     _completer->complete(rect);
+}
+
+void Editor::keyReleaseEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        insertPlainText(_indent);
+    }
 }
 
 void Editor::focusInEvent(QFocusEvent *event)
@@ -317,6 +339,20 @@ void Editor::InsertCompletion(const QString &completion)
     cursor.insertText(completion.right(extra));
 
     setTextCursor(cursor);
+}
+
+void Editor::CalculateIndent()
+{
+    _indent = "";
+    QTextCursor cursor = textCursor();
+    cursor.select(QTextCursor::LineUnderCursor);
+    QString c = cursor.selectedText();
+
+    int i = 0;
+    if (c.length() > 0) {
+        while (c.at(i) == ' ') i++;
+        _indent = c.mid(0, i);
+    }
 }
 
 QString Editor::TextUnderCursor() const

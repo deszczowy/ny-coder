@@ -43,6 +43,8 @@ private slots:
 private:
     ProjectTree *_project;
 
+    void OpenNewTab(QString fileName, QString path);
+
 private slots:
     void onProjectElementSelection(QTreeWidgetItem *item, int column);
 
@@ -60,6 +62,7 @@ private:
     void EditorsSettings();
     void OutputSettings();
     void ConnectSlots();
+    void BindShortcuts();
 
     void SetupTheme();
 
