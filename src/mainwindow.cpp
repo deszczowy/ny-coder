@@ -106,6 +106,8 @@ void MainWindow::BindShortcuts()
     new QShortcut(QKeySequence("F5"), this, SLOT(onGo()));
     new QShortcut(QKeySequence("F1"), this, SLOT(onTest()));
     new QShortcut(QKeySequence("F10"), this, SLOT(onBreak()));
+    new QShortcut(QKeySequence("Ctrl+S"), this, SLOT(onSaveCurrentFile()));
+    new QShortcut(QKeySequence("Ctrl+Shift+S"), this, SLOT(onSaveAllFiles()));
 }
 
 void MainWindow::SetupTheme()
@@ -142,6 +144,8 @@ void MainWindow::OpenNewTab(QString fileName, QString path)
     Editor *page = new Editor(ui->editorMain, path);
     int idx = ui->editorMain->addTab(page, fileName);
     page->SetContext(idx, ui->editorMain);
+    page->setFocus();
+    page->document()->setModified(false);
 }
 
 void MainWindow::onGo()
@@ -213,12 +217,19 @@ void MainWindow::onOpenFolder()
 
 void MainWindow::onSaveCurrentFile()
 {
-    std::cout << "Save current";
+    Editor *e = (Editor*)ui->editorMain->currentWidget();
+    e->Save();
 }
 
 void MainWindow::onSaveAllFiles()
 {
-    std::cout << "Save all";
+    bool go = true;
+    for (int i = 0; i < ui->editorMain->count(); i++){
+        Editor *editor = (Editor*)ui->editorMain->widget(i);
+        if (go){
+            go = editor->Save();
+        }
+    }
 }
 
 void MainWindow::onQuitApplication()
@@ -305,6 +316,8 @@ void MainWindow::DestroyMenuItems()
 
 void MainWindow::onCLoseTab(int index)
 {
+    bool go = true;
+
     Editor *e = (Editor*)ui->editorMain->currentWidget();
     if (e->document()->isModified()) {
 
@@ -314,19 +327,19 @@ void MainWindow::onCLoseTab(int index)
                                        QMessageBox::Save | QMessageBox::Discard
                                        | QMessageBox::Cancel,
                                        QMessageBox::Save);
-        bool go = false;
         switch (ret) {
         case QMessageBox::Save:
             go = e->Save();
             break;
-        case QMessageBox::Discard:
-            go = true;
+        case QMessageBox::Cancel:
+            go = false;
             break;
         default:
             break;
         }
-        if (go){
-            ui->editorMain->removeTab(index);
-        }
+    }
+
+    if (go){
+        ui->editorMain->removeTab(index);
     }
 }

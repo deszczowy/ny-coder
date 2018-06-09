@@ -50,12 +50,14 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
     UpdateLineNumberAreaWidth(0);
     SelectCurrentLine();
 
+    #if defined(Q_OS_WIN)
+    //setFont(QFont("Inconsolata", 12, 1));
+    setFont(QFont("Courier", 12, 1));
+    #else
     setFont(QFont("Liberation Mono", 12, 1));
-
-
+    #endif
     SyntaxLisp *syntax = new SyntaxLisp(document());
 
-    //setStyleSheet("padding: 5px; border: 0; background-color: #fff;");
     LoadFile(filePath);
 }
 

@@ -5,11 +5,11 @@
 
 int main(int argc, char *argv[])
 {
+    Q_INIT_RESOURCE(resources);
 
-    /* not working on X11 :(
-    QFontDatabase::addApplicationFont(":/otf/res/fonts/inconsolata.otf");
-    QFontDatabase::addApplicationFont(":/ttf/res/fonts/quicksand.ttf");
-    */
+    /* not working on X11 :( */
+    //QFontDatabase::addApplicationFont(QString(":/otf/res/fonts/inconsolata.otf"));
+    //QFontDatabase::addApplicationFont(QString(":/ttf/res/fonts/quicksand.ttf"));
 
     StorageFile sf("");
     sf.Add("test1", "test");
