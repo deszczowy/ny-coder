@@ -57,11 +57,19 @@ MainWindow::~MainWindow()
 void MainWindow::BaseUiSettings()
 {
     ui->setupUi(this);
+
+
+    SetButtonGlyph(ui->breakButton, ":/icon/res/ico/stop-script-normal.png");
+    SetButtonGlyph(ui->goButton, ":/icon/res/ico/run-script-normal.png");
+    SetButtonGlyph(ui->menuButton, ":/icon/res/ico/menu-normal.png");
+
     mainSplitter = new QSplitter(this);
     mainSplitter->addWidget(ui->navigatorPane);
     mainSplitter->addWidget(ui->editorPane);
     mainSplitter->addWidget(ui->outputPane);
     setCentralWidget(mainSplitter);
+
+    setWindowTitle("Nyquist Coder :: version 0.0");
     showMaximized();
 }
 
@@ -116,6 +124,15 @@ void MainWindow::SetupTheme()
     setStyleSheet(styler.CssMain());
 }
 
+void MainWindow::SetButtonGlyph(QPushButton *button, QString glyphPath)
+{
+    if(button){
+        button->setIcon(QIcon(glyphPath));
+        button->setIconSize(QSize(45,45));
+        button->setText("");
+    }
+}
+
 //
 //
 // Events
@@ -146,6 +163,7 @@ void MainWindow::OpenNewTab(QString fileName, QString path)
     page->SetContext(idx, ui->editorMain);
     page->setFocus();
     page->document()->setModified(false);
+    ui->editorMain->setCurrentIndex(idx);
 }
 
 void MainWindow::onGo()
@@ -287,6 +305,9 @@ void MainWindow::BindMenuItemsWithSlots()
 {
     connect(miOpenFolder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
     connect(miRunCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onGo()));
+    connect(miSaveAllFiles, SIGNAL(triggered(bool)), this, SLOT(onSaveAllFiles()));
+    connect(miSaveCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFile()));
+    connect(miQuitApplication, SIGNAL(triggered(bool)), this, SLOT(onQuitApplication()));
     connect(miTest, SIGNAL(triggered(bool)), this, SLOT(onTest()));
 }
 

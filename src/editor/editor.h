@@ -45,6 +45,7 @@ private slots:
     void SelectCurrentLine();
     void UpdateLineNumberArea(const QRect &rect, int dy);
     void InsertCompletion(const QString &completion);
+    void SetModificationIndicator(bool modified);
 
 private:
     QWidget *_extensionBar;
@@ -56,6 +57,7 @@ private:
     bool _untitled;
     int _index;
     QTabWidget *_pages;
+    bool _loaded;
 
     QString _indent;
     void CalculateIndent();

@@ -18,5 +18,9 @@
     <qresource prefix="/icon">
         <file>res/ico/close-tab-hover.png</file>
         <file>res/ico/close-tab-normal.png</file>
+        <file>res/ico/application.png</file>
+        <file>res/ico/menu-normal.png</file>
+        <file>res/ico/run-script-normal.png</file>
+        <file>res/ico/stop-script-normal.png</file>
     </qresource>
 </RCC>

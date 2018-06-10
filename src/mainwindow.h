@@ -6,6 +6,7 @@
 
 #include <QMainWindow>
 #include <QMenu>
+#include <QPushButton>
 
 #include <QProcess>
 #include <QTextEdit>
@@ -65,6 +66,8 @@ private:
     void BindShortcuts();
 
     void SetupTheme();
+
+    void SetButtonGlyph(QPushButton *button, QString glyphPath);
 
 private slots:
     void onGo();

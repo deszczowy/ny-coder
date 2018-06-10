@@ -31,6 +31,8 @@ padding: 5px;
 
 Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
 {
+    _loaded = false;
+
     _extensionBar = new ExtensionBar(this);
 
     // autocompletion
@@ -46,6 +48,7 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(UpdateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(UpdateLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(SelectCurrentLine()));
+    connect(this, SIGNAL(modificationChanged(bool)), this, SLOT(SetModificationIndicator(bool)));
 
     UpdateLineNumberAreaWidth(0);
     SelectCurrentLine();
@@ -139,16 +142,19 @@ void Editor::LoadFile(QString path)
     _path = "";
     _untitled = true;
 
-    QFile file(path);
-    if (file.open(QFile::ReadOnly | QIODevice::Text))
-    {
-        _path = path;
-        _untitled = false;
+    if (path != ""){
+        QFile file(path);
+        if (file.open(QFile::ReadOnly | QIODevice::Text))
+        {
+            _path = path;
+            _untitled = false;
 
-        QTextStream in(&file);
-        content = in.readAll();
+            QTextStream in(&file);
+            content = in.readAll();
+        }
     }
-    document()->setPlainText(content);
+    document()->setPlainText(content);    
+    _loaded = true;
 }
 
 QString Editor::Content()
@@ -341,6 +347,25 @@ void Editor::InsertCompletion(const QString &completion)
     cursor.insertText(completion.right(extra));
 
     setTextCursor(cursor);
+}
+
+void Editor::SetModificationIndicator(bool modified)
+{
+    if (_loaded){
+        QString caption = _pages->tabText(_index);
+
+        if (modified){
+            if (!caption.startsWith("* ")){
+                caption.prepend("* ");
+            }
+        } else {
+            if (caption.startsWith("* ")){
+                caption = caption.mid(2);
+            }
+        }
+
+        _pages->setTabText(_index, caption);
+    }
 }
 
 void Editor::CalculateIndent()
