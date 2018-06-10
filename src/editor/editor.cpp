@@ -244,15 +244,27 @@ void Editor::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+    bool stop = false;
+    switch (event->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
         CalculateIndent();
+        break;
+    case Qt::Key_Tab:
+        insertPlainText("    ");
+        stop = true;
+        break;
+    default:
+        break;
     }
 
     // shortcut = ctrl+e
     bool isShortCut = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_E);
 
-    if (!_completer || !isShortCut)
+    if (!stop){
+    if (!_completer || !isShortCut )
         QPlainTextEdit::keyPressEvent(event);
+    }
 
     const bool ctrlOrShift = event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
     if(!_completer || (ctrlOrShift && event->text().isEmpty()))
@@ -284,8 +296,18 @@ void Editor::keyPressEvent(QKeyEvent *event)
 
 void Editor::keyReleaseEvent(QKeyEvent *event)
 {
-    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+    switch (event->key()) {
+    case Qt::Key_Enter:
+    case Qt::Key_Return:
         insertPlainText(_indent);
+        break;
+    case Qt::Key_ParenLeft:
+        insertPlainText(")");
+        moveCursor(QTextCursor::Left, QTextCursor::MoveAnchor);
+        break;
+    default:
+        QPlainTextEdit::keyReleaseEvent(event);
+        break;
     }
 }
 

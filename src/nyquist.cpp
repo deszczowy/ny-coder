@@ -92,7 +92,7 @@ void Nyquist::Stop()
 
 void Nyquist::PlayWelcomeTune()
 {
-    Send("(play (osc 50))");
+    Send("(play (seq (osc 50 0.5)(osc 43 0.5)))");
 }
 
 void Nyquist::SendTop()
