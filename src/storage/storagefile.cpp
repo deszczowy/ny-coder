@@ -50,7 +50,9 @@ void StorageFile::Add(QString key, QString value)
 
 void StorageFile::LoadFromFile(QString fileName)
 {
-    QFile file(fileName);
+    QString path = BuildPath(fileName);
+
+    QFile file(path);
     Clear();
 
     if (file.open(QFile::ReadOnly | QIODevice::Text))
@@ -67,10 +69,27 @@ void StorageFile::LoadFromFile(QString fileName)
                QString first = line.mid(0, pos).trimmed();
                QString second = line.mid(pos +1, line.length() - pos).trimmed();
 
-               Add(first, second);
+               if (second != ""){
+                   Add(first, second);
+               }
            }
         }
         file.close();
     }
 
+}
+
+QString StorageFile::BuildPath(QString data)
+{
+    if (
+        data.endsWith(".theme")
+     || data.endsWith(".setup")
+    )
+        return data;
+
+    QString path = ":/theme/res/themes/";
+    path.append(data);
+    path.append(".theme");
+
+    return path;
 }

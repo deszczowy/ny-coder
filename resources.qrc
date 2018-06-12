@@ -23,4 +23,8 @@
         <file>res/ico/run-script-normal.png</file>
         <file>res/ico/stop-script-normal.png</file>
     </qresource>
+    <qresource prefix="/theme">
+        <file>res/themes/default.theme</file>
+        <file>res/themes/carbon.theme</file>
+    </qresource>
 </RCC>

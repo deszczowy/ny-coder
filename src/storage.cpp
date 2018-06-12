@@ -27,8 +27,35 @@ QStringList Storage::lispWordsRegEx()
     return _lispRegEx;
 }
 
+QString Storage::nyquistPath()
+{
+    QString def = "ny";
+    if (_setup){
+        return _setup->Value("nyquist-path", def);
+    } else {
+        return def;
+    }
+}
+
+QString Storage::themeValue(QString key)
+{
+    QString def = "#FFFFFF";
+    if (_theme){
+        return _theme->Value(
+                    key,
+                    _defaultTheme->Value(key, def)
+               );
+    } else {
+        return def;
+    }
+}
+
 Storage::Storage()
 {
+    _setup = new StorageFile("nyc.setup");
+    _theme = new StorageFile(_setup->Value("theme", "default"));
+    _defaultTheme = new StorageFile("default");
+
     QSqlDatabase m_db;
 
     if (QSqlDatabase::contains()){

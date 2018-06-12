@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QString>
 
+#include "storage/storagefile.h"
 
 class Storage
 {
@@ -14,6 +15,9 @@ public:
     QStringList nyquistWordsRegEx();
     QStringList lispWordsRegEx();
 
+    QString nyquistPath();
+    QString themeValue(QString key);
+
 private:
     Storage();
     Storage(const Storage &);
@@ -22,7 +26,12 @@ private:
 
     QStringList _nyquistRegEx;
     QStringList _lispRegEx;
+private:
+    StorageFile *_setup;
+    StorageFile *_theme;
+    StorageFile *_defaultTheme;
 
+private:
     void gatherData();
     void gatherNyquistWords();
     void gatherLispWords();

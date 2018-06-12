@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include <ui_mainwindow.h>
 
+#include "preferences.h"
+
 #include "projectitem.h"
 #include "storage.h"
 #include "styler.h"
@@ -10,6 +12,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QMenuBar>
 #include <QMessageBox>
 #include <QShortcut>
 
@@ -26,6 +29,10 @@
 //
 //
 
+/*
+    Preferences *pref = new Preferences();
+    pref->exec();
+*/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -58,6 +65,7 @@ void MainWindow::BaseUiSettings()
 {
     ui->setupUi(this);
 
+    _fullscreen = false;
 
     SetButtonGlyph(ui->breakButton, ":/icon/res/ico/stop-script-normal.png");
     SetButtonGlyph(ui->goButton, ":/icon/res/ico/run-script-normal.png");
@@ -67,10 +75,13 @@ void MainWindow::BaseUiSettings()
     mainSplitter->addWidget(ui->navigatorPane);
     mainSplitter->addWidget(ui->editorPane);
     mainSplitter->addWidget(ui->outputPane);
+
     setCentralWidget(mainSplitter);
 
     setWindowTitle("Nyquist Coder :: version 0.0");
+
     showMaximized();
+    _maximized = true;
 }
 
 void MainWindow::EditorsSettings()
@@ -113,9 +124,11 @@ void MainWindow::BindShortcuts()
 {
     new QShortcut(QKeySequence("F5"), this, SLOT(onGo()));
     new QShortcut(QKeySequence("F1"), this, SLOT(onTest()));
+    new QShortcut(QKeySequence("F11"), this, SLOT(onFullscreen()));
     new QShortcut(QKeySequence("F10"), this, SLOT(onBreak()));
     new QShortcut(QKeySequence("Ctrl+S"), this, SLOT(onSaveCurrentFile()));
     new QShortcut(QKeySequence("Ctrl+Shift+S"), this, SLOT(onSaveAllFiles()));
+    new QShortcut(QKeySequence("Esc"), this, SLOT(onMenu()));
 }
 
 void MainWindow::SetupTheme()
@@ -220,6 +233,36 @@ void MainWindow::onTest()
     _project = new ProjectTree(ui->projectStructureView, "D:\\Programy\\Nyquist\\jnyqide\\Nyq", extensions);
 }
 
+void MainWindow::onFullscreen()
+{
+    _fullscreen = !_fullscreen;
+
+    if (_fullscreen) {
+        _maximized = isMaximized();
+        showFullScreen();
+    } else {
+        if (_maximized) {
+            showMaximized();
+        } else {
+            showNormal();
+        }
+    }
+}
+
+void MainWindow::onToggleOutput()
+{
+    ui->outputPane->setVisible(
+        !ui->outputPane->isVisible()
+                );
+}
+
+void MainWindow::onToggleProjectTree()
+{
+    ui->navigatorPane->setVisible(
+        !ui->navigatorPane->isVisible()
+                );
+}
+
 void MainWindow::onOpenFolder()
 {
     QStringList extensions;
@@ -282,21 +325,78 @@ void MainWindow::ShowContextMenu(const QPoint &pos)
 
 void MainWindow::BuildMenuActionsStructure()
 {
-    mainMenu = new QMenu(tr("NyCoder"), this);
+    // Actions
 
-    miOpenFolder      = new QAction("Open folder", this);
-    miSaveCurrentFile = new QAction("Save current file", this);
-    miSaveAllFiles    = new QAction("Save all files", this);
+    // projectMenu
+    miOpenFolder        = new QAction("Open folder", this);
+    miReloadProject     = new QAction("Reload project", this);
+    miSaveCurrentFile   = new QAction("Save current file", this);
+    miSaveCurrentFileAs = new QAction("Save current file as...", this);
+    miSaveAllFiles      = new QAction("Save all files", this);
+    miCloseCurrentFile  = new QAction("Close current file", this);
+    miCloseProject      = new QAction("Close project", this);
+
+    // viewMenu
+    miSwitchNyquistOutput    = new QAction("Toggle Nyquist output", this);
+    miSwitchProjectStructure = new QAction("Toggle project structure", this);
+    miFullscreen             = new QAction("Toggle fullscreen", this);
+
+    // nyquistMenu
+    miRunCurrentFile = new QAction("Run", this);
+    miReplay         = new QAction("Replay", this);
+    miBreak          = new QAction("Break", this);
+    miRefreshNyquist = new QAction("Refresh Nyquist", this);
+    miClearOutput    = new QAction("Clear output", this);
+
+    // main menu
+    miPreferences     = new QAction("Preferences", this);
     miQuitApplication = new QAction("Quit", this);
-    miRunCurrentFile  = new QAction("Run", this);
-    miTest            = new QAction("Test", this);
 
+    // debug
+    miTest = new QAction("Test", this);
+
+    // Structure
+
+    mainMenu = new QMenu(tr("Nyquist Coder Menu"), this);
+
+    // this will be build from configuration
     mainMenu->addAction(miOpenFolder);
-    mainMenu->addAction(miSaveCurrentFile);
-    mainMenu->addAction(miSaveAllFiles);
-    mainMenu->addAction(miRunCurrentFile);
+
+    mainMenu->addSeparator();
+
+    projectMenu = mainMenu->addMenu(tr("Project"));
+    projectMenu->addAction(miOpenFolder);
+    projectMenu->addAction(miReloadProject);
+    projectMenu->addSeparator();
+    projectMenu->addAction(miSaveCurrentFile);
+    projectMenu->addAction(miSaveCurrentFileAs);
+    projectMenu->addAction(miSaveAllFiles);
+    projectMenu->addSeparator();
+    projectMenu->addAction(miCloseCurrentFile);
+    projectMenu->addAction(miCloseProject);
+
+    viewMenu = mainMenu->addMenu(tr("View"));
+    viewMenu->addAction(miSwitchNyquistOutput);
+    viewMenu->addAction(miSwitchProjectStructure);
+    viewMenu->addSeparator();
+    viewMenu->addAction(miFullscreen);
+
+    nyquistMenu = mainMenu->addMenu(tr("Nyquist"));
+    nyquistMenu->addAction(miRunCurrentFile);
+    nyquistMenu->addAction(miReplay);
+    nyquistMenu->addAction(miBreak);
+    nyquistMenu->addSeparator();
+    nyquistMenu->addAction(miRefreshNyquist);
+    nyquistMenu->addAction(miClearOutput);
+
+    mainMenu->addSeparator();
+    mainMenu->addAction(miPreferences);
+    mainMenu->addSeparator();
     mainMenu->addAction(miQuitApplication);
+
     mainMenu->addAction(miTest);
+
+    // bindings
 
     BindMenuItemsWithSlots();
 }
@@ -308,16 +408,35 @@ void MainWindow::BindMenuItemsWithSlots()
     connect(miSaveAllFiles, SIGNAL(triggered(bool)), this, SLOT(onSaveAllFiles()));
     connect(miSaveCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFile()));
     connect(miQuitApplication, SIGNAL(triggered(bool)), this, SLOT(onQuitApplication()));
+    connect(miSwitchNyquistOutput, SIGNAL(triggered(bool)), this, SLOT(onToggleOutput()));
+    connect(miSwitchProjectStructure, SIGNAL(triggered(bool)), this, SLOT(onToggleProjectTree()));
     connect(miTest, SIGNAL(triggered(bool)), this, SLOT(onTest()));
 }
 
 void MainWindow::DestroyMenuItems()
 {
     delete miOpenFolder;
+    delete miReloadProject;
     delete miSaveCurrentFile;
+    delete miSaveCurrentFileAs;
     delete miSaveAllFiles;
-    delete miQuitApplication;
+    delete miCloseCurrentFile;
+    delete miCloseProject;
+    delete miSwitchNyquistOutput;
+    delete miSwitchProjectStructure;
+    delete miFullscreen;
     delete miRunCurrentFile;
+    delete miReplay;
+    delete miBreak;
+    delete miRefreshNyquist;
+    delete miClearOutput;
+    delete miPreferences;
+    delete miQuitApplication;
+    delete miTest;
+
+    delete projectMenu;
+    delete viewMenu;
+    delete nyquistMenu;
 
     delete mainMenu;
 }

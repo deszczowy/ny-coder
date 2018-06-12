@@ -37,7 +37,8 @@ SOURCES += \
     src/storage/storagefile.cpp \
     src/styler.cpp \
     src/toolbox.cpp \
-    src/storage.cpp
+    src/storage.cpp \
+    src/preferences.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -52,10 +53,12 @@ HEADERS += \
     src/storage/storagefile.h \
     src/styler.h \
     src/toolbox.h \
-    src/storage.h
+    src/storage.h \
+    src/preferences.h
 
 FORMS += \
-        src/mainwindow.ui
+        src/mainwindow.ui \
+    src/preferences.ui
 
 RESOURCES += \
     resources.qrc

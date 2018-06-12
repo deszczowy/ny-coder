@@ -16,6 +16,8 @@
 #include <src/styler.h>
 #include <src/syntaxlisp.h>
 
+#include "../storage.h"
+
 /*
 QWidget
 {
@@ -55,7 +57,7 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
 
     #if defined(Q_OS_WIN)
     //setFont(QFont("Inconsolata", 12, 1));
-    setFont(QFont("Courier", 12, 1));
+    setFont(QFont("Fira Code Retina", 12, 1));
     #else
     setFont(QFont("Liberation Mono", 12, 1));
     #endif
@@ -72,7 +74,7 @@ void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
     Styler styler;
 
     QPainter painter(_extensionBar);
-    painter.fillRect(event->rect(), styler.Background());
+    painter.fillRect(event->rect(), Color("background"));
 
 
     QTextBlock block = firstVisibleBlock();
@@ -83,7 +85,7 @@ void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
     while (block.isValid() && top <= event->rect().bottom()) {
         if (block.isVisible() && bottom >= event->rect().top()) {
             QString number = QString::number(blockNumber + 1);
-            painter.setPen(styler.Font());
+            painter.setPen(Color("font"));
             painter.drawText(0, top, _extensionBar->width(), fontMetrics().height(),
                              Qt::AlignRight, number);
         }
@@ -155,6 +157,11 @@ void Editor::LoadFile(QString path)
     }
     document()->setPlainText(content);    
     _loaded = true;
+}
+
+QColor Editor::Color(QString themeField)
+{
+    return QColor(Storage::getInstance().themeValue(themeField));
 }
 
 QString Editor::Content()
@@ -309,6 +316,12 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
         QPlainTextEdit::keyReleaseEvent(event);
         break;
     }
+
+    bool isMakeList = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_L);
+
+    if (isMakeList){
+        IncorporateLineIntoList();
+    }
 }
 
 void Editor::focusInEvent(QFocusEvent *event)
@@ -332,7 +345,7 @@ void Editor::SelectCurrentLine()
         QTextEdit::ExtraSelection selection;
 
         Styler styler;
-        QColor lineColor = styler.Highlight();
+        QColor lineColor = Color("selected-line");
 
         selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
@@ -388,6 +401,20 @@ void Editor::SetModificationIndicator(bool modified)
 
         _pages->setTabText(_index, caption);
     }
+}
+
+void Editor::IncorporateLineIntoList()
+{
+    QTextCursor cursor = textCursor();
+    cursor.select(QTextCursor::LineUnderCursor);
+    QString c = "(";
+    c.append(cursor.selectedText());
+    c.append(")");
+    cursor.removeSelectedText();
+    setTextCursor(cursor);
+    insertPlainText(c);
+    moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
+    moveCursor(QTextCursor::Right, QTextCursor::MoveAnchor);
 }
 
 void Editor::CalculateIndent()

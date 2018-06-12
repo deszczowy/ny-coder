@@ -19,6 +19,7 @@ private:
     QMap<QString, QString> _storage;
 
     void LoadFromFile(QString fileName);
+    QString BuildPath(QString data);
 };
 
 #endif // STORAGEFILE_H

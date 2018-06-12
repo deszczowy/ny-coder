@@ -11,6 +11,10 @@ QWidget
 
 	Tab widget
 */
+QTabWidget
+{
+font: 12px;
+}
 
 QTabWidget::pane 
 {
@@ -30,9 +34,10 @@ QTabBar::tab
 {
 	border: 0;
 	border-radius: 0;
-	min-width: 8ex;
-	padding: 10px;
+        min-width: 50px;
+        padding: 10px 15px 7px 15px;
         background-color: $border;
+
 }
 
 QTabBar::tab:selected, QTabBar::tab:hover
@@ -131,7 +136,8 @@ QScrollBar::sub-line:vertical
 	subcontrol-origin: margin;
 }
 
-QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
+{
     background: none;
 }
 /*
@@ -146,6 +152,7 @@ QMenu
 QMenu::item
 {
 	padding: 5px;
+        min-width: 200px;
 }
 
 QMenu::item:selected

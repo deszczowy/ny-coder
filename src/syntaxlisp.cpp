@@ -55,7 +55,7 @@ void SyntaxLisp::ApplyLispMethodRules(HighlightingRule &rule)
 {
     //
     // style
-    lispMethodsFormat.setForeground(styler.Lisp());
+    lispMethodsFormat.setForeground(QColor(Storage::getInstance().themeValue("lisp")));
     lispMethodsFormat.setFontWeight(QFont::Bold);
 
     //QStringList words = (QStringList);
@@ -75,7 +75,7 @@ void SyntaxLisp::ApplyLispMethodRules(HighlightingRule &rule)
 void SyntaxLisp::ApplyNyquistMethodRule(HighlightingRule &rule)
 {
     // style
-    nyquistMethodsFormat.setForeground(styler.Nyquist());
+    nyquistMethodsFormat.setForeground(QColor(Storage::getInstance().themeValue("nyquist")));
     nyquistMethodsFormat.setFontWeight(QFont::Bold);
 
     // select '<< "\\(' || help || '\\b"' from nldata where source = 'N' order by word desc;
@@ -98,12 +98,12 @@ void SyntaxLisp::ApplyBlockCommentRule(HighlightingRule &rule)
 {
     commentStartExpression = QRegularExpression("#\\|");
     commentEndExpression = QRegularExpression("\\|#");
-    multiLineCommentFormat.setForeground(styler.Comment());
+    multiLineCommentFormat.setForeground(QColor(Storage::getInstance().themeValue("comment")));
 }
 
 void SyntaxLisp::ApplyInlineCommentRule(HighlightingRule &rule)
 {
-    singleLineCommentFormat.setForeground(styler.Comment());
+    singleLineCommentFormat.setForeground(QColor(Storage::getInstance().themeValue("comment")));
     rule.pattern = QRegularExpression(";[^\n]*");
     rule.format = singleLineCommentFormat;
     highlightingRules.append(rule);
@@ -111,7 +111,7 @@ void SyntaxLisp::ApplyInlineCommentRule(HighlightingRule &rule)
 
 void SyntaxLisp::ApplyListRule(HighlightingRule &rule)
 {
-    listDelimiter.setForeground(styler.Parenthesis());
+    listDelimiter.setForeground(QColor(Storage::getInstance().themeValue("parenthesis")));
     rule.pattern = QRegularExpression("\\(");
     rule.format = listDelimiter;
     highlightingRules.append(rule);
@@ -123,7 +123,7 @@ void SyntaxLisp::ApplyListRule(HighlightingRule &rule)
 
 void SyntaxLisp::ApplyQuotationRule(HighlightingRule &rule)
 {
-    quotationFormat.setForeground(styler.Text());
+    quotationFormat.setForeground(QColor(Storage::getInstance().themeValue("string")));
     rule.pattern = QRegularExpression("\".+?\"");
     rule.format = quotationFormat;
     highlightingRules.append(rule);
@@ -131,7 +131,7 @@ void SyntaxLisp::ApplyQuotationRule(HighlightingRule &rule)
 
 void SyntaxLisp::ApplyGlobalVariableRule(SyntaxLisp::HighlightingRule &rule)
 {
-    globalFormat.setForeground(styler.Global());
+    globalFormat.setForeground(QColor(Storage::getInstance().themeValue("global")));
     rule.pattern = QRegularExpression("\\*.+?\\*");
     rule.format = globalFormat;
     highlightingRules.append(rule);

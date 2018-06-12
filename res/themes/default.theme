@@ -1,0 +1,22 @@
+; Nyquist Coder
+; Default theme
+
+; Based on design seed from https://www.design-seeds.com/wander/wanderlust/a-door-hues-45/
+
+; XLISP & Nyquist keywords
+lisp          : #d6dadf
+nyquist       : #d8ca8d
+global        : #c39f9f
+
+; Code elements
+parenthesis   : #5b868f
+string        : #ecece7
+comment       : #8dd8a6
+
+; UI styling
+selected-line : #35435d
+background    : #2d384e
+border        : #3b5787
+font          : #9fbac3
+
+; eof

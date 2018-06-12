@@ -46,6 +46,7 @@ private slots:
     void UpdateLineNumberArea(const QRect &rect, int dy);
     void InsertCompletion(const QString &completion);
     void SetModificationIndicator(bool modified);
+    void IncorporateLineIntoList();
 
 private:
     QWidget *_extensionBar;
@@ -66,6 +67,8 @@ private:
     QAbstractItemModel *modelFromFile(const QString & fileName);
 
     void LoadFile(QString path);
+
+    QColor Color(QString themeField);
 };
 
 #endif // EDITOR_H

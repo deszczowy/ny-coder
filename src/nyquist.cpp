@@ -1,4 +1,5 @@
 #include "nyquist.h"
+#include "storage.h"
 
 Nyquist::Nyquist()
 {
@@ -71,11 +72,8 @@ void Nyquist::Start()
     if(_process)
     {
         _isRunning = true;
-        #if defined(Q_OS_WIN)
-        _process->start("D:\\Programy\\Nyquist\\jnyqide\\nyquist.exe", QIODevice::ReadWrite);
-        #else
-        _process->start("ny", QIODevice::ReadWrite);
-        #endif
+        QString p = Storage::getInstance().nyquistPath();
+        _process->start(p, QIODevice::ReadWrite);
     }
 }
 

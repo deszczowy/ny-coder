@@ -55,6 +55,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Controller _controller;
+    bool _fullscreen;
+    bool _maximized;
     
     QSplitter *mainSplitter;
     QSplitter *editorSplitter;
@@ -76,6 +78,9 @@ private slots:
     void onClear();
     void onRefresh();
     void onTest();
+    void onFullscreen();
+    void onToggleOutput();
+    void onToggleProjectTree();
 
 /*
     The menu section,
@@ -84,11 +89,30 @@ private slots:
 private:
     QMenu* mainMenu;
 
+    QMenu* projectMenu;
     QAction* miOpenFolder;
+    QAction* miReloadProject;
     QAction* miSaveCurrentFile;
+    QAction* miSaveCurrentFileAs;
     QAction* miSaveAllFiles;
-    QAction* miQuitApplication;
+    QAction* miCloseCurrentFile;
+    QAction* miCloseProject;
+
+    QMenu* viewMenu;
+    QAction* miSwitchNyquistOutput;
+    QAction* miSwitchProjectStructure;
+    QAction* miFullscreen;
+
+    QMenu* nyquistMenu;
     QAction* miRunCurrentFile;
+    QAction* miReplay;
+    QAction* miBreak;
+    QAction* miRefreshNyquist;
+    QAction* miClearOutput;
+
+    QAction* miPreferences;
+    QAction* miQuitApplication;
+
     QAction* miTest;
 
     void ShowContextMenu(const QPoint &pos);
