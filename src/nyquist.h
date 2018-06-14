@@ -29,4 +29,6 @@ private:
     void Send(QString code);
 };
 
-#endif // NYQUIST_H
+#endif
+
+// NYQUIST_H

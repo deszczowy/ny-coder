@@ -4,8 +4,8 @@
 #include "preferences.h"
 
 #include "projectitem.h"
-#include "storage.h"
-#include "styler.h"
+#include <src/storage/storage.h>
+#include <src/styler.h>
 
 #include <fstream>
 #include <iostream>
@@ -71,12 +71,25 @@ void MainWindow::BaseUiSettings()
     SetButtonGlyph(ui->goButton, ":/icon/res/ico/run-script-normal.png");
     SetButtonGlyph(ui->menuButton, ":/icon/res/ico/menu-normal.png");
 
+    canvas = new Canvas;
+    canvas->setMinimumSize(200, 100);
+    canvas->SetPen(QColor(Storage::getInstance().themeValue("font")));
+    canvas->SetBrush(QColor(Storage::getInstance().themeValue("background")));
+    canvas->setVisible(false);
+
+
     mainSplitter = new QSplitter(this);
+    ideSplitter = new QSplitter(this);
+    ideSplitter->setOrientation(Qt::Vertical);
+
+    ideSplitter->addWidget(mainSplitter);
+    ideSplitter->addWidget(canvas);
+
     mainSplitter->addWidget(ui->navigatorPane);
     mainSplitter->addWidget(ui->editorPane);
     mainSplitter->addWidget(ui->outputPane);
 
-    setCentralWidget(mainSplitter);
+    setCentralWidget(ideSplitter);
 
     setWindowTitle("Nyquist Coder :: version 0.0");
 
@@ -129,6 +142,7 @@ void MainWindow::BindShortcuts()
     new QShortcut(QKeySequence("Ctrl+S"), this, SLOT(onSaveCurrentFile()));
     new QShortcut(QKeySequence("Ctrl+Shift+S"), this, SLOT(onSaveAllFiles()));
     new QShortcut(QKeySequence("Esc"), this, SLOT(onMenu()));
+    new QShortcut(QKeySequence("F2"), this, SLOT(onTogglePlotter()));
 }
 
 void MainWindow::SetupTheme()
@@ -144,6 +158,11 @@ void MainWindow::SetButtonGlyph(QPushButton *button, QString glyphPath)
         button->setIconSize(QSize(45,45));
         button->setText("");
     }
+}
+
+void MainWindow::onTogglePlotter()
+{
+    ui->ploter->setVisible(!ui->ploter->isVisible());
 }
 
 //
@@ -164,10 +183,37 @@ void MainWindow::closeEvent(QCloseEvent *event){
 
 void MainWindow::onStdoutAvailable(){
     QByteArray data = _controller.GetNyquistProcess()->readAllStandardOutput();
-    ui->outputArea->append(QString(data));
+    QString received(data);
+    CheckOutput(received);
+    ui->outputArea->append(received);
 }
 
 void MainWindow::onFinished(int, QProcess::ExitStatus){}
+
+void MainWindow::CheckOutput(QString data)
+{
+    // read plot points file path from output
+    int start = data.indexOf("s-plot: writing ");
+    int end = -1;
+    QString path = "";
+
+    if (start >= 0){
+        end = data.indexOf(" ...");
+        if (end > start){
+            start += 16;
+            path = data.mid(start, end - start);
+            _pointsPath = path;
+        }
+    }
+
+    qDebug() << path;
+
+
+    if (data.indexOf(" points from") >= 0) {
+        canvas->setVisible(true);
+        canvas->Plot(_pointsPath);
+    }
+}
 
 void MainWindow::OpenNewTab(QString fileName, QString path)
 {
@@ -230,7 +276,9 @@ void MainWindow::onTest()
     QStringList extensions;
     extensions << ".lsp" << ".lisp";
     ui->projectStructureView->clear();
-    _project = new ProjectTree(ui->projectStructureView, "D:\\Programy\\Nyquist\\jnyqide\\Nyq", extensions);
+    QString dir = "D:/Programy/Nyquist/jnyqide/Nyq";
+    _project = new ProjectTree(ui->projectStructureView, dir, extensions);
+    _controller.SetupProject(dir);
 }
 
 void MainWindow::onFullscreen()
@@ -273,6 +321,7 @@ void MainWindow::onOpenFolder()
     {
         ui->projectStructureView->clear();
         _project = new ProjectTree(ui->projectStructureView, dir, extensions);
+        _controller.SetupProject(dir);
     }
 }
 
@@ -280,6 +329,12 @@ void MainWindow::onSaveCurrentFile()
 {
     Editor *e = (Editor*)ui->editorMain->currentWidget();
     e->Save();
+}
+
+void MainWindow::onSaveCurrentFileAs()
+{
+    Editor *e = (Editor*)ui->editorMain->currentWidget();
+    e->SaveAs();
 }
 
 void MainWindow::onSaveAllFiles()
@@ -404,12 +459,22 @@ void MainWindow::BuildMenuActionsStructure()
 void MainWindow::BindMenuItemsWithSlots()
 {
     connect(miOpenFolder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
-    connect(miRunCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onGo()));
-    connect(miSaveAllFiles, SIGNAL(triggered(bool)), this, SLOT(onSaveAllFiles()));
+    //miReloadProject     = new QAction("Reload project", this);
     connect(miSaveCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFile()));
-    connect(miQuitApplication, SIGNAL(triggered(bool)), this, SLOT(onQuitApplication()));
+    connect(miSaveCurrentFileAs, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFileAs()));
+    connect(miSaveAllFiles, SIGNAL(triggered(bool)), this, SLOT(onSaveAllFiles()));
+    connect(miCloseCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onCLoseTab(int)));
+    //miCloseProject      = new QAction("Close project", this);
     connect(miSwitchNyquistOutput, SIGNAL(triggered(bool)), this, SLOT(onToggleOutput()));
     connect(miSwitchProjectStructure, SIGNAL(triggered(bool)), this, SLOT(onToggleProjectTree()));
+    connect(miFullscreen, SIGNAL(triggered(bool)), this, SLOT(onFullscreen()));
+    connect(miRunCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onGo()));
+    //miReplay         = new QAction("Replay", this);
+    connect(miBreak, SIGNAL(triggered(bool)), this, SLOT(onBreak()));
+    connect(miRefreshNyquist, SIGNAL(triggered(bool)), this, SLOT(onRefresh()));
+    connect(miClearOutput, SIGNAL(triggered(bool)), this, SLOT(onClear()));
+    //miPreferences     = new QAction("Preferences", this);
+    connect(miQuitApplication, SIGNAL(triggered(bool)), this, SLOT(onQuitApplication()));
     connect(miTest, SIGNAL(triggered(bool)), this, SLOT(onTest()));
 }
 
@@ -459,6 +524,11 @@ void MainWindow::onCLoseTab(int index)
     bool go = true;
 
     Editor *e = (Editor*)ui->editorMain->currentWidget();
+    int indx = ui->editorMain->currentIndex();
+
+    if (indx != index){
+        indx = index;
+    }
     if (e->document()->isModified()) {
 
         int ret = QMessageBox::question(this, tr("Question"),
@@ -480,6 +550,6 @@ void MainWindow::onCLoseTab(int index)
     }
 
     if (go){
-        ui->editorMain->removeTab(index);
+        ui->editorMain->removeTab(indx);
     }
 }

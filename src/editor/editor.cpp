@@ -14,9 +14,9 @@
 #include <QFileDialog>
 
 #include <src/styler.h>
-#include <src/syntaxlisp.h>
+#include "syntaxlisp.h"
 
-#include "../storage.h"
+#include <src/storage/storage.h>
 
 /*
 QWidget
@@ -149,6 +149,7 @@ void Editor::LoadFile(QString path)
         if (file.open(QFile::ReadOnly | QIODevice::Text))
         {
             _path = path;
+            _fileName = QFileInfo(path).fileName();
             _untitled = false;
 
             QTextStream in(&file);
@@ -171,7 +172,7 @@ QString Editor::Content()
 
 QString Editor::Path()
 {
-    return _path;
+    return _fileName;//_path;
 }
 
 bool Editor::Save()
@@ -413,7 +414,7 @@ void Editor::IncorporateLineIntoList()
     cursor.removeSelectedText();
     setTextCursor(cursor);
     insertPlainText(c);
-    moveCursor(QTextCursor::Start, QTextCursor::MoveAnchor);
+    moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
     moveCursor(QTextCursor::Right, QTextCursor::MoveAnchor);
 }
 

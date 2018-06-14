@@ -31,11 +31,18 @@ Makefile*
 *.autosave
 
 # QtCtreator Qml
+
 *.qmlproject.user
 *.qmlproject.user.*
 
 # QtCtreator CMake
+
 CMakeLists.txt.user*
 
 # Project builds
+
 bin/*
+
+# deploy batch from template
+
+dep.bat

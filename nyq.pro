@@ -29,7 +29,7 @@ SOURCES += \
         src/mainwindow.cpp \
     src/projectitem.cpp \
     src/projecttree.cpp \
-    src/syntaxlisp.cpp \
+    src/editor/syntaxlisp.cpp \
     src/editor/editor.cpp \
     src/editor/extensionbar.cpp \
     src/controller.cpp \
@@ -37,14 +37,17 @@ SOURCES += \
     src/storage/storagefile.cpp \
     src/styler.cpp \
     src/toolbox.cpp \
-    src/storage.cpp \
-    src/preferences.cpp
+    src/storage/storage.cpp \
+    src/preferences.cpp \
+    src/plotter/canvas.cpp \
+    src/plotter/frame.cpp \
+    src/plotter/plotdata.cpp
 
 HEADERS += \
         src/mainwindow.h \
     src/projectitem.h \
     src/projecttree.h \
-    src/syntaxlisp.h \
+    src/editor/syntaxlisp.h \
     src/editor/editor.h \
     src/editor/extensionbar.h \
     src/controller.h \
@@ -53,8 +56,11 @@ HEADERS += \
     src/storage/storagefile.h \
     src/styler.h \
     src/toolbox.h \
-    src/storage.h \
-    src/preferences.h
+    src/storage/storage.h \
+    src/preferences.h \
+    src/plotter/canvas.h \
+    src/plotter/frame.h \
+    src/plotter/plotdata.h
 
 FORMS += \
         src/mainwindow.ui \

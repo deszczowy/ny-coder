@@ -1,5 +1,6 @@
 #include "nyquist.h"
-#include "storage.h"
+#include <src/storage/storage.h>
+#include "toolbox.h"
 
 Nyquist::Nyquist()
 {
@@ -90,7 +91,8 @@ void Nyquist::Stop()
 
 void Nyquist::PlayWelcomeTune()
 {
-    Send("(play (seq (osc 50 0.5)(osc 43 0.5)))");
+    QString tune = Toolbox::FileContent(":/script/res/scripts/welcome.lsp");
+    Send(tune);
 }
 
 void Nyquist::SendTop()

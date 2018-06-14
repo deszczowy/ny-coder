@@ -16,6 +16,7 @@ public:
     void Restart();
     void Shutdown();
     void Break();
+    void SetupProject(QString projectPath);
     bool ExecuteFile(QString sourceFile);
 
 private:

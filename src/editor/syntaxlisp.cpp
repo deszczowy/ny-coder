@@ -1,5 +1,5 @@
 #include "syntaxlisp.h"
-#include "storage.h"
+#include <src/storage/storage.h>
 
 #include <QDebug>
 

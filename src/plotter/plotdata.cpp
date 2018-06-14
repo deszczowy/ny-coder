@@ -1,0 +1,90 @@
+#include "plotdata.h"
+#include <src/toolbox.h>
+
+#include <QTextStream>
+
+PlotData::PlotData(QString path)
+{
+    Reset();
+    InitializeProperties();
+    ProcessFile(path);
+}
+
+double PlotData::Length()
+{
+    return _length;
+}
+
+void PlotData::Reset()
+{
+    _cursor = 0;
+}
+
+Frame &PlotData::Next()
+{
+    _cursor++;
+    return _frames[_cursor -1];
+}
+
+bool PlotData::HasNextFrame()
+{
+    return _cursor < _frames.count();
+}
+
+bool PlotData::HasFrames()
+{
+    return _frames.count() > 0;
+}
+
+int PlotData::Count()
+{
+    return _frames.count();
+}
+
+void PlotData::InitializeProperties()
+{
+    // this settings prevents properties stick to 0
+    _min = 1.0;
+    _max = -1.0;
+    _length = 0;
+
+    _frames.clear();
+}
+
+void PlotData::Add(QStringList pair)
+{
+    // contain key (time) and value (amplitude)
+    if (2 == pair.count()){
+
+        double one = pair[0].toDouble();
+        double two = pair[1].toDouble();
+
+        _max = Toolbox::Max(_max, two);
+        _min = Toolbox::Min(_min, two);
+        _length = Toolbox::Max(_length, one);
+
+        _frames.append(Frame(one, two));
+    }
+}
+
+void PlotData::ProcessFile(QString path)
+{
+    QFile file(path);
+    if (file.open(QFile::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&file);
+        QString line = "";
+        QStringList parts;
+
+        while (!in.atEnd())
+        {
+            line = in.readLine().trimmed();
+            parts = line.split(" ", QString::SkipEmptyParts);
+            Add(parts);
+        }
+        file.close();
+    }
+}
+
+
+

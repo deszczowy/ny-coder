@@ -13,6 +13,8 @@
 #include <QSplitter>
 #include <QTreeWidgetItem>
 
+#include <src/plotter/canvas.h>
+
 #include "controller.h"
 #include "projecttree.h"
 
@@ -37,6 +39,8 @@ public:
 private slots:
     void onStdoutAvailable();
     void onFinished(int, QProcess::ExitStatus);
+private:
+    void CheckOutput(QString data);
 
 /*
     The project structure
@@ -57,7 +61,11 @@ private:
     Controller _controller;
     bool _fullscreen;
     bool _maximized;
+
+    QString _pointsPath;
+    Canvas *canvas;
     
+    QSplitter *ideSplitter;
     QSplitter *mainSplitter;
     QSplitter *editorSplitter;
 
@@ -71,6 +79,8 @@ private:
 
     void SetButtonGlyph(QPushButton *button, QString glyphPath);
 
+
+
 private slots:
     void onGo();
     void onBreak();
@@ -81,6 +91,7 @@ private slots:
     void onFullscreen();
     void onToggleOutput();
     void onToggleProjectTree();
+    void onTogglePlotter();
 
 /*
     The menu section,
@@ -123,6 +134,7 @@ private:
 private slots:
     void onOpenFolder();
     void onSaveCurrentFile();
+    void onSaveCurrentFileAs();
     void onSaveAllFiles();
     void onQuitApplication();
 

@@ -1,6 +1,6 @@
 #include "styler.h"
 #include "toolbox.h"
-#include "storage.h"
+#include <src/storage/storage.h>
 
 QString Styler::CssMain()
 {

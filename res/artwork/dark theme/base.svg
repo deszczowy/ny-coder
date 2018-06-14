@@ -14,7 +14,7 @@
    id="svg3094"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="Nowy dokument 3">
+   sodipodi:docname="base.svg">
   <defs
      id="defs3" />
   <sodipodi:namedview
@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.82671158"
      inkscape:cx="144.64024"
-     inkscape:cy="638.72538"
+     inkscape:cy="639.33019"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1842"
@@ -43,7 +43,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -156,17 +156,145 @@
          id="tspan3934"
          x="85.882431"
          y="290.30682">;comment is here</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3100-1"
+       width="622.95001"
+       height="439.08905"
+       x="-778.38513"
+       y="357.44025" />
     <text
        xml:space="preserve"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="-471.74857"
-       y="256.43768"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ff8080;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-561.25983"
+       y="434.25061"
        id="text3936"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan3938"
-         x="-471.74857"
-         y="256.43768"
-         style="fill:#d6dadf;fill-opacity:1">test</tspan></text>
+         x="-561.25983"
+         y="434.25061"
+         style="fill:#37abc8;fill-opacity:1">*test*</tspan></text>
+    <rect
+       style="fill:#333333;fill-opacity:1;stroke:none"
+       id="rect3944-7"
+       width="573.35596"
+       height="27.82107"
+       x="-759.03131"
+       y="677.98737" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-686.45459"
+       y="514.68976"
+       id="text3102-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3104-0"
+         x="-686.45459"
+         y="514.68976">Lorem ipsum dolor sim amet.</tspan><tspan
+         sodipodi:role="line"
+         x="-686.45459"
+         y="564.68976"
+         id="tspan3106-9">amet sim dolor ipsum lorem.</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#666666;stroke-width:3.54330707000000000;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3108-4"
+       width="142.73418"
+       height="56.851749"
+       x="-768.70819"
+       y="371.9556" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#9fbac3;fill-opacity:1;stroke:none;font-family:Courier New;-inkscape-font-specification:Courier New"
+       x="-719.11414"
+       y="655.00476"
+       id="text3110-8"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3112-8"
+         x="-719.11414"
+         y="655.00476"
+         style="fill:#cccccc">this is code</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#9fbac3;fill-opacity:1;stroke:none;font-family:Courier New;-inkscape-font-specification:Courier New"
+       x="-728.79102"
+       y="700.97003"
+       id="text3114-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3116-4"
+         x="-728.79102"
+         y="700.97003"><tspan
+   style="fill:#666666;fill-opacity:1"
+   id="tspan3970-5">(</tspan><tspan
+   style="font-size:40px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#ff5555;fill-opacity:1;font-family:Courier New;-inkscape-font-specification:Courier New Bold"
+   id="tspan3118-5">play</tspan><tspan
+   style="fill:#666666;fill-opacity:1"
+   id="tspan3968-1"> (</tspan><tspan
+   style="font-weight:bold;fill:#d8ca8d;fill-opacity:1;-inkscape-font-specification:Courier New Bold"
+   id="tspan3900-7">mult</tspan> snd1 snd2<tspan
+   style="fill:#666666;fill-opacity:1"
+   id="tspan3946-1">))</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#9fbac3;fill-opacity:1;stroke:none;font-family:Sans"
+       x="-730.00067"
+       y="411.87277"
+       id="text3888-1"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3890-5"
+         x="-730.00067"
+         y="411.87277">GO</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#9fbac3;fill-opacity:1;stroke:none;font-family:Courier New;-inkscape-font-specification:Courier New"
+       x="-730.00067"
+       y="748.14484"
+       id="text3914-2"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3916-7"
+         x="-730.00067"
+         y="748.14484">(<tspan
+   style="font-weight:bold;fill:#d6dadf;fill-opacity:1;-inkscape-font-specification:Courier New Bold"
+   id="tspan3918-6">print</tspan><tspan
+   style="fill:#d8ca8d;fill-opacity:1"
+   id="tspan3922-1"> &quot;lorem ipsum&quot;</tspan>)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#008000;fill-opacity:1;stroke:none;font-family:Courier New;-inkscape-font-specification:Courier New"
+       x="-719.11414"
+       y="610.24915"
+       id="text3932-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3934-2"
+         x="-719.11414"
+         y="610.24915">;comment is here</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Banana Yeti;-inkscape-font-specification:Banana Yeti Ultra-Bold"
+       x="30.240294"
+       y="19.35379"
+       id="text3169"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3171"
+         x="30.240294"
+         y="19.35379">cobalt</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:800;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Banana Yeti;-inkscape-font-specification:Banana Yeti Ultra-Bold"
+       x="-758.42651"
+       y="326.59515"
+       id="text3173"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3175"
+         x="-758.42651"
+         y="326.59515">carbon</tspan></text>
   </g>
 </svg>

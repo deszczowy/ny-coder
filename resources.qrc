@@ -27,4 +27,8 @@
         <file>res/themes/default.theme</file>
         <file>res/themes/carbon.theme</file>
     </qresource>
+    <qresource prefix="/script">
+        <file>res/scripts/welcome.lsp</file>
+        <file>res/scripts/projectsetup.lsp</file>
+    </qresource>
 </RCC>

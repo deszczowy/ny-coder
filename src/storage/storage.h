@@ -5,7 +5,7 @@
 #include <QStringList>
 #include <QString>
 
-#include "storage/storagefile.h"
+#include "storagefile.h"
 
 class Storage
 {

@@ -55,6 +55,7 @@ private:
     QCompleter *completer;
 
     QString _path;
+    QString _fileName;
     bool _untitled;
     int _index;
     QTabWidget *_pages;

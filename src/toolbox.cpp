@@ -24,4 +24,14 @@ void ReplaceAll(QString &where, QString pattern, QString replace)
     where = where.replace(pattern, replace);
 }
 
+double Min(double a, double b)
+{
+    return a < b ? a : b;
+}
+
+double Max(double a, double b)
+{
+    return a > b ? a : b;
+}
+
 }
