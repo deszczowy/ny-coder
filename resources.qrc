@@ -16,12 +16,11 @@
         <file>res/db/words.sqlite</file>
     </qresource>
     <qresource prefix="/icon">
-        <file>res/ico/close-tab-hover.png</file>
-        <file>res/ico/close-tab-normal.png</file>
         <file>res/ico/application.png</file>
-        <file>res/ico/menu-normal.png</file>
-        <file>res/ico/run-script-normal.png</file>
-        <file>res/ico/stop-script-normal.png</file>
+        <file>res/ico/node-closed.png</file>
+        <file>res/ico/node-file.png</file>
+        <file>res/ico/node-opened.png</file>
+        <file>res/ico/node-line.png</file>
     </qresource>
     <qresource prefix="/theme">
         <file>res/themes/default.theme</file>
@@ -30,5 +29,19 @@
     <qresource prefix="/script">
         <file>res/scripts/welcome.lsp</file>
         <file>res/scripts/projectsetup.lsp</file>
+    </qresource>
+    <qresource prefix="/icon/png">
+        <file>res/ico/png/close-tab-hover.png</file>
+        <file>res/ico/png/close-tab-normal.png</file>
+    </qresource>
+    <qresource prefix="/icon/svg">
+        <file>res/ico/svg/document-lisp.svg</file>
+        <file>res/ico/svg/folder-closed.svg</file>
+        <file>res/ico/svg/folder-empty.svg</file>
+        <file>res/ico/svg/folder-opened.svg</file>
+        <file>res/ico/svg/menu.svg</file>
+        <file>res/ico/svg/transporter-play.svg</file>
+        <file>res/ico/svg/transporter-stop.svg</file>
+        <file>res/ico/svg/transporter-replay.svg</file>
     </qresource>
 </RCC>

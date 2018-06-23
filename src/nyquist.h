@@ -12,6 +12,7 @@ public:
 
     void Run();
     void Break();
+    void Replay();
     void Quit();
     void Restart();
     void LoadFile(QString fileName);

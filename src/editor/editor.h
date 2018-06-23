@@ -41,7 +41,7 @@ protected:
     void focusInEvent(QFocusEvent *event) override;
 
 private slots:
-    void UpdateLineNumberAreaWidth(int newBlockCount);
+    void UpdateLineNumberAreaWidth(int);
     void SelectCurrentLine();
     void UpdateLineNumberArea(const QRect &rect, int dy);
     void InsertCompletion(const QString &completion);
@@ -66,6 +66,7 @@ private:
 
     QString TextUnderCursor() const;
     QAbstractItemModel *modelFromFile(const QString & fileName);
+    QAbstractItemModel *CompletionModel();
 
     void LoadFile(QString path);
 

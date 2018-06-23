@@ -6,13 +6,15 @@
 class ProjectItem : public QTreeWidgetItem
 {
 public:
-    ProjectItem(QTreeWidgetItem *parent, QStringList nodeName, QString filePath);
+    ProjectItem(QTreeWidgetItem *parent, QStringList nodeName, QString filePath, bool isDirectory);
 
     QString getFilePath();
     QString getFileName();
+    bool isDirectory();
 private:
-    QString filePath;
-    QString fileName;
+    QString _filePath;
+    QString _fileName;
+    bool _directory;
 };
 
 #endif // PROJECTITEM_H

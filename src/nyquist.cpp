@@ -1,6 +1,6 @@
 #include "nyquist.h"
 #include <src/storage/storage.h>
-#include "toolbox.h"
+#include "swiss.h"
 
 Nyquist::Nyquist()
 {
@@ -28,6 +28,11 @@ void Nyquist::Run()
 void Nyquist::Break()
 {
     SendTop();
+}
+
+void Nyquist::Replay()
+{
+    Send("(r)");
 }
 
 void Nyquist::Quit()
@@ -91,7 +96,7 @@ void Nyquist::Stop()
 
 void Nyquist::PlayWelcomeTune()
 {
-    QString tune = Toolbox::FileContent(":/script/res/scripts/welcome.lsp");
+    QString tune = SwissArmyKnife::FileContent(":/script/res/scripts/welcome.lsp");
     Send(tune);
 }
 

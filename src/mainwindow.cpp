@@ -6,11 +6,11 @@
 #include "projectitem.h"
 #include <src/storage/storage.h>
 #include <src/styler.h>
+#include <src/logger.h>
 
 #include <fstream>
 #include <iostream>
 
-#include <QDebug>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -22,6 +22,7 @@
 #include <src/editor/editor.h>
 
 #include <src/storage/storagefile.h>
+#include <src/storage/labels.h>
 
 //
 //
@@ -37,13 +38,14 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    CreateActions();
+
     BaseUiSettings();
+    BuildMenu();
     SetupTheme();
     EditorsSettings();
     OutputSettings();
     ConnectSlots();
-    BuildMenuActionsStructure();
-    BindShortcuts();
 
     OpenNewTab("New", ""); //
     _controller.Start();
@@ -51,7 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    DestroyMenuItems();
+    DestroyActions();
+    DestroyMenuNodes();
     delete ui;
 }
 
@@ -64,37 +67,15 @@ MainWindow::~MainWindow()
 void MainWindow::BaseUiSettings()
 {
     ui->setupUi(this);
-
-    _fullscreen = false;
-
-    SetButtonGlyph(ui->breakButton, ":/icon/res/ico/stop-script-normal.png");
-    SetButtonGlyph(ui->goButton, ":/icon/res/ico/run-script-normal.png");
-    SetButtonGlyph(ui->menuButton, ":/icon/res/ico/menu-normal.png");
-
-    canvas = new Canvas;
-    canvas->setMinimumSize(200, 100);
-    canvas->SetPen(QColor(Storage::getInstance().themeValue("font")));
-    canvas->SetBrush(QColor(Storage::getInstance().themeValue("background")));
-    canvas->setVisible(false);
-
-
-    mainSplitter = new QSplitter(this);
-    ideSplitter = new QSplitter(this);
-    ideSplitter->setOrientation(Qt::Vertical);
-
-    ideSplitter->addWidget(mainSplitter);
-    ideSplitter->addWidget(canvas);
-
-    mainSplitter->addWidget(ui->navigatorPane);
-    mainSplitter->addWidget(ui->editorPane);
-    mainSplitter->addWidget(ui->outputPane);
-
-    setCentralWidget(ideSplitter);
-
     setWindowTitle("Nyquist Coder :: version 0.0");
 
-    showMaximized();
+    Logger::Bind(ui->outputLogArea);
+
+    _fullscreen = false;
     _maximized = true;
+
+    BuildWorkspace();
+    showMaximized();
 }
 
 void MainWindow::EditorsSettings()
@@ -108,7 +89,7 @@ void MainWindow::EditorsSettings()
 
 void MainWindow::OutputSettings()
 {
-    ui->outputArea->setFont(QFont("Courier", 12, 1));
+    ui->outputNyquistArea->setFont(QFont("Courier", 12, 1));
 }
 
 void MainWindow::ConnectSlots()
@@ -116,11 +97,6 @@ void MainWindow::ConnectSlots()
     // nyquist output
     connect(_controller.GetNyquistProcess(), SIGNAL(readyReadStandardOutput()), this, SLOT(onStdoutAvailable()) );
     connect(_controller.GetNyquistProcess(), SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(onFinished(int, QProcess::ExitStatus)) );
-
-    // transport buttons
-    connect(ui->goButton, SIGNAL(clicked(bool)), this, SLOT(onGo()) );
-    connect(ui->breakButton, SIGNAL(clicked(bool)), this, SLOT(onBreak()) );
-    connect(ui->menuButton, SIGNAL(clicked(bool)), this, SLOT(onMenu()) );
 
     // output buttons
     connect(ui->clearOutput, SIGNAL(clicked(bool)), this, SLOT(onClear()) );
@@ -133,17 +109,133 @@ void MainWindow::ConnectSlots()
     connect(ui->projectStructureView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onProjectElementSelection(QTreeWidgetItem*,int)) );
 }
 
+void MainWindow::CreatePlotterCanvas()
+{
+    _canvas = new Canvas(this);
+    _canvas->setMinimumSize(200, 100);
+    _canvas->SetPen(QColor(Storage::getInstance().themeValue("font")));
+    _canvas->SetBrush(QColor(Storage::getInstance().themeValue("background")));
+    _canvas->setVisible(false);
+}
+
+void MainWindow::CreateTransportButtons()
+{
+    if (ui->transportPane){
+        _transporterLayout = new QHBoxLayout(ui->transportPane);
+
+        _menuButton = new NyActionButton(ui->transportPane);
+        _runButton = new NyActionButton(ui->transportPane);
+        _replayButton = new NyActionButton(ui->transportPane);
+        _breakButton = new NyActionButton(ui->transportPane);
+
+        _menuButton->setAction(_doMenu);
+        _runButton->setAction(_doRunScript);
+        _replayButton->setAction(_doReplayLast);
+        _breakButton->setAction(_doBreak);
+
+        SetButtonGlyph(_menuButton, Labels::ICON_MENU);
+        SetButtonGlyph(_runButton, Labels::ICON_TRANSPORTER_PLAY);
+        SetButtonGlyph(_replayButton, Labels::ICON_TRANSPORTER_REPLAY);
+        SetButtonGlyph(_breakButton, Labels::ICON_TRANSPORTER_STOP);
+
+        _transporterLayout->setSizeConstraint(QLayout::SetMaximumSize);
+        _transporterLayout->addWidget(_menuButton);
+        _transporterLayout->addWidget(_runButton);
+        _transporterLayout->addWidget(_replayButton);
+        _transporterLayout->addWidget(_breakButton);
+        _transporterLayout->addStretch();
+    }
+}
+
 void MainWindow::BindShortcuts()
 {
-    new QShortcut(QKeySequence("F5"), this, SLOT(onGo()));
-    new QShortcut(QKeySequence("F1"), this, SLOT(onTest()));
-    new QShortcut(QKeySequence("F11"), this, SLOT(onFullscreen()));
-    new QShortcut(QKeySequence("F10"), this, SLOT(onBreak()));
-    new QShortcut(QKeySequence("Ctrl+S"), this, SLOT(onSaveCurrentFile()));
-    new QShortcut(QKeySequence("Ctrl+Shift+S"), this, SLOT(onSaveAllFiles()));
-    new QShortcut(QKeySequence("Esc"), this, SLOT(onMenu()));
-    new QShortcut(QKeySequence("F2"), this, SLOT(onTogglePlotter()));
+    _doMenu->setShortcut(QKeySequence("Esc"));
+
+    _doRunScript->setShortcut(QKeySequence("F5"));
+    _doReplayLast->setShortcut(QKeySequence("F6"));
+    _doBreak->setShortcut(QKeySequence("F8"));
+
+    _doOpenProject->setShortcut(QKeySequence("Ctrl+O"));
+    _doReloadProject->setShortcut(QKeySequence("Ctrl+R"));
+    _doCloseProject->setShortcut(QKeySequence("Ctrl+Q"));
+
+    _doCloseCurrentFile->setShortcut(QKeySequence("Ctrl+T"));
+    _doSaveCurrentFile->setShortcut(QKeySequence("Ctrl+S"));
+    _doSaveCurrentFileAs->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    _doSaveAllFiles->setShortcut(QKeySequence("Ctrl+D"));
+
+    _doToggleFullscreen->setShortcut(QKeySequence("F11"));
+    _doToggleOutputPanel->setShortcut(QKeySequence("F10"));
+    _doToggleProjectTree->setShortcut(QKeySequence("F9"));
+    _doTogglePlotter->setShortcut(QKeySequence("F12"));
+
+    //_doShowPreferences->setShortcut(QKeySequence("F10"));
+    //_doShowHelp->setShortcut(QKeySequence("F10"));
+
+    _doNyquistRefresh->setShortcut(QKeySequence("Ctrl+Shift+R"));
+    _doNyquistClearOutput->setShortcut(QKeySequence("Ctrl+Shift+E"));
+    _doLogClear->setShortcut(QKeySequence("Ctrl+Shift+L"));
+
+    _doQuit->setShortcut(QKeySequence("Alt+F4"));
+
+    _doTest->setShortcut(QKeySequence("F1"));
 }
+
+void MainWindow::BindSlots()
+{
+    connect(_doMenu,       SIGNAL(triggered(bool)), this, SLOT(onMenu()));
+    connect(_doRunScript,  SIGNAL(triggered(bool)), this, SLOT(onGo()));
+    connect(_doReplayLast, SIGNAL(triggered(bool)), this, SLOT(onReplayLast()));
+    connect(_doBreak,      SIGNAL(triggered(bool)), this, SLOT(onBreak()));
+
+    connect(_doOpenProject,       SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
+    connect(_doReloadProject,     SIGNAL(triggered(bool)), this, SLOT(onReloadProject()));
+    //connect(_doCloseProject,      SIGNAL(triggered(bool)), this, SLOT());
+    connect(_doCloseCurrentFile,  SIGNAL(triggered(bool)), this, SLOT(onCloseCurrentFile()));
+    connect(_doSaveCurrentFile,   SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFile()));
+    connect(_doSaveCurrentFileAs, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFileAs()));
+    connect(_doSaveAllFiles,      SIGNAL(triggered(bool)), this, SLOT(onSaveAllFiles()));
+
+    connect(_doToggleFullscreen,   SIGNAL(triggered(bool)), this, SLOT(onFullscreen()));
+    connect(_doToggleOutputPanel,  SIGNAL(triggered(bool)), this, SLOT(onToggleOutput()));
+    connect(_doToggleProjectTree,  SIGNAL(triggered(bool)), this, SLOT(onToggleProjectTree()));
+    connect(_doTogglePlotter,      SIGNAL(triggered(bool)), this, SLOT(onTogglePlotter()));
+    //connect(_doShowPreferences,    SIGNAL(triggered(bool)), this, SLOT());
+    //connect(_doShowHelp,           SIGNAL(triggered(bool)), this, SLOT());
+    connect(_doNyquistRefresh,     SIGNAL(triggered(bool)), this, SLOT(onRefresh()));
+    connect(_doNyquistClearOutput, SIGNAL(triggered(bool)), this, SLOT(onClear()));
+    //connect(_doLogClear,           SIGNAL(triggered(bool)), this, SLOT());
+
+    connect(_doQuit, SIGNAL(triggered(bool)), this, SLOT(onQuit()));
+    connect(_doTest, SIGNAL(triggered(bool)), this, SLOT(onTest()));
+}
+
+void MainWindow::BindActions()
+{
+    addAction(_doMenu);
+    addAction(_doRunScript);
+    addAction(_doReplayLast);
+    addAction(_doBreak);
+    addAction(_doOpenProject);
+    addAction(_doReloadProject);
+    addAction(_doCloseProject);
+    addAction(_doCloseCurrentFile);
+    addAction(_doSaveCurrentFile);
+    addAction(_doSaveCurrentFileAs);
+    addAction(_doSaveAllFiles);
+    addAction(_doToggleFullscreen);
+    addAction(_doToggleOutputPanel);
+    addAction(_doToggleProjectTree);
+    addAction(_doTogglePlotter);
+    addAction(_doShowPreferences);
+    addAction(_doShowHelp);
+    addAction(_doNyquistRefresh);
+    addAction(_doNyquistClearOutput);
+    addAction(_doLogClear);
+    addAction(_doQuit);
+    addAction(_doTest);
+}
+
 
 void MainWindow::SetupTheme()
 {
@@ -154,7 +246,7 @@ void MainWindow::SetupTheme()
 void MainWindow::SetButtonGlyph(QPushButton *button, QString glyphPath)
 {
     if(button){
-        button->setIcon(QIcon(glyphPath));
+        button->setIcon(Storage::getInstance().icon(glyphPath));
         button->setIconSize(QSize(45,45));
         button->setText("");
     }
@@ -162,7 +254,7 @@ void MainWindow::SetButtonGlyph(QPushButton *button, QString glyphPath)
 
 void MainWindow::onTogglePlotter()
 {
-    ui->ploter->setVisible(!ui->ploter->isVisible());
+    _canvas->setVisible(!_canvas->isVisible());
 }
 
 //
@@ -172,7 +264,9 @@ void MainWindow::onTogglePlotter()
 //
 
 void MainWindow::closeEvent(QCloseEvent *event){
+    _allowQuit = false;
     onQuitApplication();
+    if (!_allowQuit){event->ignore();}
 }
 
 //
@@ -182,10 +276,11 @@ void MainWindow::closeEvent(QCloseEvent *event){
 //
 
 void MainWindow::onStdoutAvailable(){
+    Logger::Write("Nyquist output");
     QByteArray data = _controller.GetNyquistProcess()->readAllStandardOutput();
     QString received(data);
     CheckOutput(received);
-    ui->outputArea->append(received);
+    ui->outputNyquistArea->append(received);
 }
 
 void MainWindow::onFinished(int, QProcess::ExitStatus){}
@@ -203,15 +298,14 @@ void MainWindow::CheckOutput(QString data)
             start += 16;
             path = data.mid(start, end - start);
             _pointsPath = path;
+
+            Logger::Write(path);
         }
     }
 
-    qDebug() << path;
-
-
     if (data.indexOf(" points from") >= 0) {
-        canvas->setVisible(true);
-        canvas->Plot(_pointsPath);
+        _canvas->setVisible(true);
+        _canvas->Plot(_pointsPath);
     }
 }
 
@@ -227,6 +321,7 @@ void MainWindow::OpenNewTab(QString fileName, QString path)
 
 void MainWindow::onGo()
 {
+    Logger::Write("Run script");
     Editor *e = (Editor*)ui->editorMain->currentWidget();
     bool canGo = true;
 
@@ -247,6 +342,11 @@ void MainWindow::onGo()
     }
 }
 
+void MainWindow::onReplayLast()
+{
+    _controller.Replay();
+}
+
 void MainWindow::onBreak()
 {
     _controller.Break();
@@ -254,16 +354,18 @@ void MainWindow::onBreak()
 
 void MainWindow::onMenu()
 {
-    QPoint p(
-        ui->menuButton->pos().x() + 2,
-        ui->menuButton->pos().y() + ui->menuButton->height() + 2
-    );
-    ShowContextMenu(p);
+    if (_menuButton){
+        QPoint p(
+            _menuButton->pos().x() + 2,
+            _menuButton->pos().y() + _menuButton->height() + 2
+        );
+        ShowContextMenu(p);
+    }
 }
 
 void MainWindow::onClear()
 {
-    ui->outputArea->clear();
+    ui->outputNyquistArea->clear();
 }
 
 void MainWindow::onRefresh()
@@ -325,42 +427,103 @@ void MainWindow::onOpenFolder()
     }
 }
 
+void MainWindow::onReloadProject()
+{
+    if (_project && SaveAllFiles()){
+        _project->Reload();
+    }
+}
+
 void MainWindow::onSaveCurrentFile()
 {
     Editor *e = (Editor*)ui->editorMain->currentWidget();
-    e->Save();
+    bool needReload = e->IsNew();
+    if(e->Save() && needReload){
+        _project->Reload();
+    }
 }
 
 void MainWindow::onSaveCurrentFileAs()
 {
     Editor *e = (Editor*)ui->editorMain->currentWidget();
-    e->SaveAs();
+    if(e->SaveAs()){
+        _project->Reload();
+    }
 }
 
 void MainWindow::onSaveAllFiles()
+{
+    SaveAllFiles();
+}
+
+void MainWindow::onCloseCurrentFile()
+{
+    onCLoseTab(-1);
+}
+
+void MainWindow::onQuit()
+{
+    bool go = true;
+    for (int i = 0; i < ui->editorMain->count(); i++){
+        Editor *editor = (Editor*)ui->editorMain->widget(i);
+        if (editor->document()->isModified()){
+
+            int ret = QMessageBox::question(this, tr("Question"),
+                                           tr("Some files are left unsaved.\n"
+                                              "Do you want to save your changes?"),
+                                           QMessageBox::Save | QMessageBox::Discard
+                                           | QMessageBox::Cancel,
+                                           QMessageBox::Save);
+            switch (ret) {
+            case QMessageBox::Save:
+                go = SaveAllFiles();
+                break;
+            case QMessageBox::Cancel:
+                go = false;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    _allowQuit = go;
+
+    if (go){
+        _controller.Shutdown();
+        exit(0);
+    }
+}
+
+bool MainWindow::SaveAllFiles()
 {
     bool go = true;
     for (int i = 0; i < ui->editorMain->count(); i++){
         Editor *editor = (Editor*)ui->editorMain->widget(i);
         if (go){
             go = editor->Save();
+
+            if (!go) break;
         }
     }
+    return go;
 }
 
 void MainWindow::onQuitApplication()
 {
-    _controller.Shutdown();
+    onQuit();
 }
 
-void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int column)
+void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int)
 {
     ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
     if (sourceFile){
-        OpenNewTab(
-                    sourceFile->getFileName(),
-                    sourceFile->getFilePath()
-        );
+        if (!sourceFile->isDirectory()){
+            OpenNewTab(
+                        sourceFile->getFileName(),
+                        sourceFile->getFilePath()
+            );
+        }
     }
 }
 
@@ -372,138 +535,87 @@ void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int column)
 
 void MainWindow::ShowContextMenu(const QPoint &pos)
 {
-    if(mainMenu)
+    if(_mainMenu)
     {
-        mainMenu->exec(mapToGlobal(pos));
+        _mainMenu->exec(mapToGlobal(pos));
     }
 }
 
-void MainWindow::BuildMenuActionsStructure()
+void MainWindow::BuildMenu()
 {
-    // Actions
+    _mainMenu = new QMenu(tr("Nyquist Coder Menu"), this);
 
-    // projectMenu
-    miOpenFolder        = new QAction("Open folder", this);
-    miReloadProject     = new QAction("Reload project", this);
-    miSaveCurrentFile   = new QAction("Save current file", this);
-    miSaveCurrentFileAs = new QAction("Save current file as...", this);
-    miSaveAllFiles      = new QAction("Save all files", this);
-    miCloseCurrentFile  = new QAction("Close current file", this);
-    miCloseProject      = new QAction("Close project", this);
+    // this is 'quick access' part, will be build from configuration
+    // only in button mode
+    _mainMenu->addAction(_doOpenProject);
+    _mainMenu->addSeparator();
 
-    // viewMenu
-    miSwitchNyquistOutput    = new QAction("Toggle Nyquist output", this);
-    miSwitchProjectStructure = new QAction("Toggle project structure", this);
-    miFullscreen             = new QAction("Toggle fullscreen", this);
+    _projectMenu = _mainMenu->addMenu(tr("Project"));
+    _projectMenu->addAction(_doOpenProject);
+    _projectMenu->addAction(_doReloadProject);
+    _projectMenu->addAction(_doCloseProject);
+    _projectMenu->addSeparator();
 
-    // nyquistMenu
-    miRunCurrentFile = new QAction("Run", this);
-    miReplay         = new QAction("Replay", this);
-    miBreak          = new QAction("Break", this);
-    miRefreshNyquist = new QAction("Refresh Nyquist", this);
-    miClearOutput    = new QAction("Clear output", this);
+    _projectMenu->addAction(_doCloseCurrentFile);
+    _projectMenu->addAction(_doSaveCurrentFile);
+    _projectMenu->addAction(_doSaveCurrentFileAs);
+    _projectMenu->addAction(_doSaveAllFiles);
 
-    // main menu
-    miPreferences     = new QAction("Preferences", this);
-    miQuitApplication = new QAction("Quit", this);
+    _viewMenu = _mainMenu->addMenu(tr("View"));
+    _viewMenu->addAction(_doToggleOutputPanel);
+    _viewMenu->addAction(_doToggleProjectTree);
+    _viewMenu->addAction(_doTogglePlotter);
+    _viewMenu->addSeparator();
+    _viewMenu->addAction(_doToggleFullscreen);
 
-    // debug
-    miTest = new QAction("Test", this);
+    _nyquistMenu = _mainMenu->addMenu(tr("Nyquist"));
+    _nyquistMenu->addAction(_doRunScript);
+    _nyquistMenu->addAction(_doReplayLast);
+    _nyquistMenu->addAction(_doBreak);
+    _nyquistMenu->addSeparator();
 
-    // Structure
+    _nyquistMenu->addAction(_doNyquistRefresh);
+    _nyquistMenu->addAction(_doNyquistClearOutput);
 
-    mainMenu = new QMenu(tr("Nyquist Coder Menu"), this);
+    _mainMenu->addSeparator();
 
-    // this will be build from configuration
-    mainMenu->addAction(miOpenFolder);
+    _mainMenu->addAction(_doShowPreferences);
+    _mainMenu->addAction(_doShowHelp);
+    _mainMenu->addSeparator();
 
-    mainMenu->addSeparator();
+    _mainMenu->addAction(_doQuit);
 
-    projectMenu = mainMenu->addMenu(tr("Project"));
-    projectMenu->addAction(miOpenFolder);
-    projectMenu->addAction(miReloadProject);
-    projectMenu->addSeparator();
-    projectMenu->addAction(miSaveCurrentFile);
-    projectMenu->addAction(miSaveCurrentFileAs);
-    projectMenu->addAction(miSaveAllFiles);
-    projectMenu->addSeparator();
-    projectMenu->addAction(miCloseCurrentFile);
-    projectMenu->addAction(miCloseProject);
-
-    viewMenu = mainMenu->addMenu(tr("View"));
-    viewMenu->addAction(miSwitchNyquistOutput);
-    viewMenu->addAction(miSwitchProjectStructure);
-    viewMenu->addSeparator();
-    viewMenu->addAction(miFullscreen);
-
-    nyquistMenu = mainMenu->addMenu(tr("Nyquist"));
-    nyquistMenu->addAction(miRunCurrentFile);
-    nyquistMenu->addAction(miReplay);
-    nyquistMenu->addAction(miBreak);
-    nyquistMenu->addSeparator();
-    nyquistMenu->addAction(miRefreshNyquist);
-    nyquistMenu->addAction(miClearOutput);
-
-    mainMenu->addSeparator();
-    mainMenu->addAction(miPreferences);
-    mainMenu->addSeparator();
-    mainMenu->addAction(miQuitApplication);
-
-    mainMenu->addAction(miTest);
-
-    // bindings
-
-    BindMenuItemsWithSlots();
+    _mainMenu->addAction(_doTest);
 }
 
-void MainWindow::BindMenuItemsWithSlots()
+void MainWindow::BuildWorkspace()
 {
-    connect(miOpenFolder, SIGNAL(triggered(bool)), this, SLOT(onOpenFolder()));
-    //miReloadProject     = new QAction("Reload project", this);
-    connect(miSaveCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFile()));
-    connect(miSaveCurrentFileAs, SIGNAL(triggered(bool)), this, SLOT(onSaveCurrentFileAs()));
-    connect(miSaveAllFiles, SIGNAL(triggered(bool)), this, SLOT(onSaveAllFiles()));
-    connect(miCloseCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onCLoseTab(int)));
-    //miCloseProject      = new QAction("Close project", this);
-    connect(miSwitchNyquistOutput, SIGNAL(triggered(bool)), this, SLOT(onToggleOutput()));
-    connect(miSwitchProjectStructure, SIGNAL(triggered(bool)), this, SLOT(onToggleProjectTree()));
-    connect(miFullscreen, SIGNAL(triggered(bool)), this, SLOT(onFullscreen()));
-    connect(miRunCurrentFile, SIGNAL(triggered(bool)), this, SLOT(onGo()));
-    //miReplay         = new QAction("Replay", this);
-    connect(miBreak, SIGNAL(triggered(bool)), this, SLOT(onBreak()));
-    connect(miRefreshNyquist, SIGNAL(triggered(bool)), this, SLOT(onRefresh()));
-    connect(miClearOutput, SIGNAL(triggered(bool)), this, SLOT(onClear()));
-    //miPreferences     = new QAction("Preferences", this);
-    connect(miQuitApplication, SIGNAL(triggered(bool)), this, SLOT(onQuitApplication()));
-    connect(miTest, SIGNAL(triggered(bool)), this, SLOT(onTest()));
+    CreateTransportButtons();
+    CreatePlotterCanvas();
+
+    _workspaceSplitter = new QSplitter(this);
+    _workspaceSplitter->setOrientation(Qt::Horizontal);
+
+    _mainSplitter = new QSplitter(this);
+    _mainSplitter->setOrientation(Qt::Vertical);
+
+    _mainSplitter->addWidget(_workspaceSplitter);
+    _mainSplitter->addWidget(_canvas);
+
+    _workspaceSplitter->addWidget(ui->navigatorPane);
+    _workspaceSplitter->addWidget(ui->editorPane);
+    _workspaceSplitter->addWidget(ui->outputPane);
+
+    setCentralWidget(_mainSplitter);
 }
 
-void MainWindow::DestroyMenuItems()
+void MainWindow::DestroyMenuNodes()
 {
-    delete miOpenFolder;
-    delete miReloadProject;
-    delete miSaveCurrentFile;
-    delete miSaveCurrentFileAs;
-    delete miSaveAllFiles;
-    delete miCloseCurrentFile;
-    delete miCloseProject;
-    delete miSwitchNyquistOutput;
-    delete miSwitchProjectStructure;
-    delete miFullscreen;
-    delete miRunCurrentFile;
-    delete miReplay;
-    delete miBreak;
-    delete miRefreshNyquist;
-    delete miClearOutput;
-    delete miPreferences;
-    delete miQuitApplication;
-    delete miTest;
+    delete _projectMenu;
+    delete _viewMenu;
+    delete _nyquistMenu;
 
-    delete projectMenu;
-    delete viewMenu;
-    delete nyquistMenu;
-
-    delete mainMenu;
+    delete _mainMenu;
 }
 
 //
@@ -526,9 +638,10 @@ void MainWindow::onCLoseTab(int index)
     Editor *e = (Editor*)ui->editorMain->currentWidget();
     int indx = ui->editorMain->currentIndex();
 
-    if (indx != index){
+    if (indx != index && index >= 0){
         indx = index;
     }
+
     if (e->document()->isModified()) {
 
         int ret = QMessageBox::question(this, tr("Question"),
@@ -552,4 +665,75 @@ void MainWindow::onCLoseTab(int index)
     if (go){
         ui->editorMain->removeTab(indx);
     }
+}
+
+void MainWindow::CreateActions()
+{
+    _doMenu = new QAction("Main menu", this);
+    _doRunScript = new QAction("Run", this);
+    _doReplayLast = new QAction("Replay", this);
+    _doBreak = new QAction("Break", this);
+
+    _doOpenProject = new QAction("Open project", this);
+    _doReloadProject = new QAction("Reload project", this);
+    _doCloseProject = new QAction("Close project", this);
+
+    _doCloseCurrentFile = new QAction("Close current file", this);
+    _doSaveCurrentFile = new QAction("Save current file", this);
+    _doSaveCurrentFileAs = new QAction("Save current file as...", this);
+    _doSaveAllFiles = new QAction("Save all files", this);
+
+    _doToggleFullscreen = new QAction("Toggle fullscreen", this);
+    _doToggleOutputPanel = new QAction("Toggle output panel", this);
+    _doToggleProjectTree = new QAction("Toggle project tree", this);
+    _doTogglePlotter = new QAction("Toggle sound plotter", this);
+
+    _doShowPreferences = new QAction("Preferences", this);
+    _doShowHelp = new QAction("Help", this);
+
+    _doNyquistRefresh = new QAction("Refresh Nyquist", this);
+    _doNyquistClearOutput = new QAction("Clear Nyquist output", this);
+
+    _doLogClear = new QAction("Clear log output", this);
+
+    _doQuit = new QAction("Quit", this);
+
+    _doTest = new QAction("Test", this);
+
+    BindShortcuts();
+    BindSlots();
+    BindActions();
+}
+
+void MainWindow::DestroyActions()
+{
+    delete _doMenu;
+    delete _doRunScript;
+    delete _doReplayLast;
+    delete _doBreak;
+
+    delete _doOpenProject;
+    delete _doReloadProject;
+    delete _doCloseProject;
+
+    delete _doCloseCurrentFile;
+    delete _doSaveCurrentFile;
+    delete _doSaveCurrentFileAs;
+    delete _doSaveAllFiles;
+
+    delete _doToggleFullscreen;
+    delete _doToggleOutputPanel;
+    delete _doToggleProjectTree;
+    delete _doTogglePlotter;
+
+    delete _doShowPreferences;
+    delete _doShowHelp;
+
+    delete _doNyquistRefresh;
+    delete _doNyquistClearOutput;
+
+    delete _doLogClear;
+
+    delete _doQuit;
+    delete _doTest;
 }

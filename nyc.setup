@@ -1,0 +1,6 @@
+; Nyquist Coder setup file
+
+nyquist-path : D:\Programy\Nyquist\jnyqide\nyquist.exe
+
+; if theme is predefined then pass only name (no '.theme' sufix). 
+theme : carbon

@@ -1,5 +1,6 @@
 #include "controller.h"
-#include "toolbox.h"
+#include "swiss.h"
+#include "storage/labels.h"
 
 Controller::Controller()
 {
@@ -30,16 +31,20 @@ void Controller::Break()
     _nyquist.Break();
 }
 
+void Controller::Replay()
+{
+    _nyquist.Replay();
+}
+
 void Controller::SetupProject(QString projectPath)
 {
-    QString com = Toolbox::FileContent(":/script/res/scripts/projectsetup.lsp");
-    Toolbox::ReplaceAll(com, "{path: project}", projectPath);
-    //Toolbox::ReplaceAll(com, "\\", "\\\\");
-    //
+    QString com = SwissArmyKnife::FileContent(Labels::SCRIPT_PROJECT_SETUP);
+    SwissArmyKnife::ReplaceAll(com, "{path: project}", projectPath);
     _nyquist.Command(com); // pun intended
 }
 
 bool Controller::ExecuteFile(QString sourceFile)
 {
     _nyquist.LoadFile(sourceFile);
+    return true;
 }

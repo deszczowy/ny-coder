@@ -1,9 +1,9 @@
-#include "toolbox.h"
+#include "swiss.h"
 
 #include <QFile>
 #include <QString>
 
-namespace Toolbox{
+namespace SwissArmyKnife{
 
 
 QString FileContent(QString fileName)

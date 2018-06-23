@@ -1,5 +1,5 @@
 #include "plotdata.h"
-#include <src/toolbox.h>
+#include <src/swiss.h>
 
 #include <QTextStream>
 
@@ -59,9 +59,9 @@ void PlotData::Add(QStringList pair)
         double one = pair[0].toDouble();
         double two = pair[1].toDouble();
 
-        _max = Toolbox::Max(_max, two);
-        _min = Toolbox::Min(_min, two);
-        _length = Toolbox::Max(_length, one);
+        _max = SwissArmyKnife::Max(_max, two);
+        _min = SwissArmyKnife::Min(_min, two);
+        _length = SwissArmyKnife::Max(_length, one);
 
         _frames.append(Frame(one, two));
     }

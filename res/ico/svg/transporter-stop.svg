@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="100"
+   height="100.00003"
+   id="svg3457"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="Nowy dokument 19">
+  <defs
+     id="defs3459" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2.3599993"
+     inkscape:cx="129.66104"
+     inkscape:cy="50.000016"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="772"
+     inkscape:window-height="423"
+     inkscape:window-x="312"
+     inkscape:window-y="234"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata3462">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-325,-482.36217)">
+    <path
+       style="fill:#b3b3b3;fill-opacity:1;stroke:none"
+       d="M 21.8125 12.78125 C 19.4572 12.78125 17.31515 13.68209 15.71875 15.15625 C 15.70475 15.16865 15.7005 15.1751 15.6875 15.1875 C 15.5095 15.35396 15.32015 15.53832 15.15625 15.71875 C 13.67765 17.31604 12.78125 19.45318 12.78125 21.8125 C 12.78125 22.16185 12.80475 22.505 12.84375 22.84375 L 12.84375 41.03125 C 12.65785 51.26779 12.97185 47.2365 12.84375 58.96875 L 12.84375 77.15625 C 12.80475 77.49539 12.78125 77.83774 12.78125 78.1875 C 12.78125 80.68948 13.7967 82.9395 15.4375 84.5625 C 15.5055 84.6315 15.58575 84.71455 15.65625 84.78125 C 15.68225 84.80525 15.69275 84.81975 15.71875 84.84375 C 17.31485 86.31765 19.4584 87.21875 21.8125 87.21875 C 22.1623 87.21875 22.50465 87.19525 22.84375 87.15625 L 41.03125 87.15625 C 51.26775 87.34225 47.23645 87.02815 58.96875 87.15625 L 77.15625 87.15625 C 77.49505 87.19525 77.8382 87.21875 78.1875 87.21875 C 80.5468 87.21875 82.68395 86.32355 84.28125 84.84375 C 84.37725 84.75675 84.4706 84.6534 84.5625 84.5625 L 84.59375 84.53125 C 84.67575 84.44925 84.76505 84.36625 84.84375 84.28125 C 86.32295 82.68402 87.21875 80.54635 87.21875 78.1875 C 87.21875 77.83774 87.19525 77.49539 87.15625 77.15625 L 87.15625 58.96875 C 87.02815 47.2365 87.34215 51.26779 87.15625 41.03125 L 87.15625 22.84375 C 87.19525 22.505 87.21875 22.16185 87.21875 21.8125 C 87.21875 19.45342 86.32325 17.31599 84.84375 15.71875 C 84.80575 15.67715 84.75745 15.63457 84.71875 15.59375 C 84.67775 15.55125 84.63535 15.51036 84.59375 15.46875 C 84.49295 15.36598 84.38685 15.25405 84.28125 15.15625 C 82.68395 13.67767 80.5468 12.78125 78.1875 12.78125 C 77.8348 12.78125 77.49815 12.80445 77.15625 12.84375 L 58.96875 12.84375 C 47.23645 12.97188 51.26775 12.65784 41.03125 12.84375 L 22.84375 12.84375 C 22.50145 12.80445 22.1657 12.78125 21.8125 12.78125 z M 30.78125 30.78125 L 41.03125 30.78125 C 50.38535 31.12802 50.47285 31.12168 58.96875 30.78125 L 69.21875 30.78125 L 69.21875 41.03125 C 68.87205 50.38538 68.87835 50.47292 69.21875 58.96875 L 69.21875 69.21875 L 58.96875 69.21875 C 50.47285 68.87832 50.38535 68.87198 41.03125 69.21875 L 30.78125 69.21875 L 30.78125 58.96875 C 31.12165 50.47292 31.12805 50.38538 30.78125 41.03125 L 30.78125 30.78125 z "
+       transform="translate(325,482.36217)"
+       id="icon-body">
+      <title
+         id="title4250">transport stop icon</title>
+    </path>
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:none;stroke:none"
+       d="m 425,532.36217 c 0,27.61423 -22.3858,50.00003 -50,50.00003 -27.6143,0 -50,-22.3858 -50,-50.00003 0,-27.61424 22.3857,-50 50,-50 27.6142,0 50,22.38576 50,50 z"
+       id="icon-sizer">
+      <title
+         id="title4252">transparent background</title>
+    </path>
+  </g>
+</svg>

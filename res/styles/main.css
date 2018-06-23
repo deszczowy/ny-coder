@@ -5,7 +5,11 @@ QWidget
 	border: 0;
         padding: 0;
         margin: 0;
+
+        selection-background-color: $border;
+        selection-color: $font;
 }
+
 
 /*
 
@@ -57,13 +61,13 @@ QTabBar::tab:!selected
 
 QTabBar::close-button
 {
-        image: url(:/icon/res/ico/close-tab-normal.png);
+        image: url(:/icon/png/res/ico/png/close-tab-normal.png);
         subcontrol-position: right;
 }
 
 QTabBar::close-button:hover
 {
-        image: url(:/icon/res/ico/close-tab-hover.png)
+        image: url(:/icon/png/res/ico/png/close-tab-hover.png)
 }
 /*
 	Controls
@@ -71,10 +75,10 @@ QTabBar::close-button:hover
 
 QPushButton
 {
-	border: 1px solid $border;
+        border: 1px solid $border;
 	border-radius: 0;
 	padding: 5px;
-	min-width: 60px;
+        min-width: 55px;
 	font-family: 'URW Gothic L';
 	font-size: 16px;
 	color: $font;
@@ -147,6 +151,7 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
 QMenu
 {
 	padding: 5px;
+        border: 1px solid $border;
 }
 
 QMenu::item
@@ -159,3 +164,33 @@ QMenu::item:selected
 {
         color: $string;
 }
+
+/*
+        Project structure
+
+QTreeView::branch:has-siblings:!adjoins-item {
+    border-image: url(:/icon/res/ico/node-line.png) 0;
+}
+
+QTreeView::branch:has-siblings:adjoins-item {
+    border-image: none;
+    image: url(:/icon/res/ico/node-file.png) 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+    border-image: none;
+    image: url(:/icon/res/ico/node-file.png) 0;
+}
+
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+        border-image: none;
+        image: url(:/icon/res/ico/node-closed.png);
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings  {
+        border-image: none;
+        image: url(:/icon/res/ico/node-opened.png);
+}
+*/

@@ -1,6 +1,8 @@
 #include "storage.h"
+#include "labels.h"
 
-#include "QDebug"
+#include <src/logger.h>
+
 #include "QSqlQuery"
 #include "QSqlRecord"
 #include "QSqlError"
@@ -27,6 +29,11 @@ QStringList Storage::lispWordsRegEx()
     return _lispRegEx;
 }
 
+QStringList Storage::completionData()
+{
+    return _completionData;
+}
+
 QString Storage::nyquistPath()
 {
     QString def = "ny";
@@ -48,6 +55,16 @@ QString Storage::themeValue(QString key)
     } else {
         return def;
     }
+}
+
+QIcon Storage::icon(QString resource)
+{
+    return _icon.GetIcon(resource, themeValue("font"));
+}
+
+QIcon Storage::icon(QString resource, QString color)
+{
+    return _icon.GetIcon(resource, color);
 }
 
 Storage::Storage()
@@ -72,23 +89,20 @@ Storage::Storage()
 
     homeLocation += QDir::separator();
     homeLocation += "words.sqlite";
-    qDebug() << homeLocation;
 
-    QFile::copy(":db/res/db/words.sqlite", homeLocation);
+    QFile::copy(Labels::DATABASE_WORDS, homeLocation);
 
     m_db.setDatabaseName(homeLocation);
 
     if (!m_db.open())
     {
-      qDebug() << "Error: connection with database fail";
+        Logger::Write("Error: connection with database fail");
     }
     else
     {
-      qDebug() << "Database: connection ok";
-
-      gatherData();
-
-      m_db.close();
+        Logger::Write("Database: connection ok");
+        gatherData();
+        m_db.close();
     }
 }
 
@@ -99,6 +113,7 @@ void Storage::gatherData()
 {
     gatherLispWords();
     gatherNyquistWords();
+    gatherCompletionData();
 }
 
 void Storage::gatherNyquistWords()
@@ -135,6 +150,24 @@ void Storage::gatherLispWords()
 
         while (q.next()){
             _lispRegEx << q.value(vLabel).toString();
+        }
+    }
+}
+
+void Storage::gatherCompletionData()
+{
+    _completionData.clear();
+
+    QString sql("SELECT call FROM nldata");
+    QSqlQuery q;
+    q.prepare(sql);
+    q.exec();
+
+    if(q.record().count() > 0){
+        int vLabel = q.record().indexOf("call");
+
+        while (q.next()){
+            _completionData << q.value(vLabel).toString();
         }
     }
 }

@@ -1,11 +1,11 @@
-#ifndef TOOLBOX_H
-#define TOOLBOX_H
+#ifndef SWISS_H
+#define SWISS_H
 
 #include <QString>
 
 
-
-namespace Toolbox
+// swiss army knife
+namespace SwissArmyKnife
 {
     QString FileContent(QString fileName);
 
@@ -16,4 +16,5 @@ namespace Toolbox
     double Max(double a, double b);
 }
 
-#endif // TOOLBOX_H
+#endif
+// SWISS_H

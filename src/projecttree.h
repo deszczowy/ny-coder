@@ -8,6 +8,7 @@ class ProjectTree
 public:
     ProjectTree(QTreeWidget *tree, QString path, QStringList filter);
 
+    void Reload();
 private:
     QTreeWidget *_tree;
     QString _path;
@@ -16,6 +17,7 @@ private:
 
     void buildStructure();
     void processDirectory(QTreeWidgetItem *item, QString &path);
+    void reload();
 
     QString rootName(const QString &path);
     QString buildFilter(QStringList &filters);

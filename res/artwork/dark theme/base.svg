@@ -25,16 +25,23 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.82671158"
-     inkscape:cx="144.64024"
-     inkscape:cy="639.33019"
+     inkscape:zoom="1.1691467"
+     inkscape:cx="-176.54227"
+     inkscape:cy="-12.238666"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1842"
      inkscape:window-height="1057"
      inkscape:window-x="70"
      inkscape:window-y="-8"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="-371.04839,246.76079"
+       id="guide3280" />
+  </sodipodi:namedview>
   <metadata
      id="metadata4">
     <rdf:RDF>
@@ -43,7 +50,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -296,5 +303,209 @@
          id="tspan3175"
          x="-758.42651"
          y="326.59515">carbon</tspan></text>
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3042"
+       width="511.66574"
+       height="362.88351"
+       x="-561.25983"
+       y="886.64539" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#b3b3b3;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+       x="-459.04617"
+       y="960.28882"
+       id="text3102-4-1"
+       sodipodi:linespacing="150%"><tspan
+         sodipodi:role="line"
+         id="tspan3068"
+         x="-459.04617"
+         y="960.28882">Project</tspan><tspan
+         sodipodi:role="line"
+         id="tspan3070"
+         x="-459.04617"
+         y="1020.2889">    file.one</tspan><tspan
+         sodipodi:role="line"
+         id="tspan3072"
+         x="-459.04617"
+         y="1080.2889">    file.two</tspan><tspan
+         sodipodi:role="line"
+         id="tspan3074"
+         x="-459.04617"
+         y="1140.2889">        file.three</tspan><tspan
+         sodipodi:role="line"
+         id="tspan3076"
+         x="-459.04617"
+         y="1200.2889">    file.five</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path3078"
+       sodipodi:cx="160.27354"
+       sodipodi:cy="772.3371"
+       sodipodi:rx="13.910535"
+       sodipodi:ry="13.910535"
+       d="m 174.18408,772.3371 a 13.910535,13.910535 0 1 1 -27.82107,0 13.910535,13.910535 0 1 1 27.82107,0 z"
+       transform="matrix(1.1462451,0,0,1.1462451,-673.99038,57.989636)"
+       inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-closed.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       d="m -454.59641,1051.2951 c -8.80883,0 -15.94488,7.136 -15.94488,15.9449 0,8.8087 7.13605,15.9806 15.94488,15.9806 8.80883,0 15.94488,-7.1719 15.94488,-15.9806 0,-8.8089 -7.13605,-15.9449 -15.94488,-15.9449 z m 0,8.1695 c 4.30867,0 7.8112,3.4667 7.8112,7.7754 0,4.3086 -3.50253,7.8111 -7.8112,7.8111 -4.30866,0 -7.8112,-3.5025 -7.8112,-7.8111 0,-4.3087 3.50254,-7.7754 7.8112,-7.7754 z"
+       id="path3078-0"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-opened.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path3078-0-9-8"
+       sodipodi:cx="160.27354"
+       sodipodi:cy="772.3371"
+       sodipodi:rx="13.910535"
+       sodipodi:ry="13.910535"
+       d="m 174.18408,772.3371 a 13.910535,13.910535 0 1 1 -27.82107,0 13.910535,13.910535 0 1 1 27.82107,0 z"
+       transform="matrix(0.48913045,0,0,0.48913045,-516.32088,628.40106)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path3078-0-9-8-2"
+       sodipodi:cx="160.27354"
+       sodipodi:cy="772.3371"
+       sodipodi:rx="13.910535"
+       sodipodi:ry="13.910535"
+       d="m 174.18408,772.3371 a 13.910535,13.910535 0 1 1 -27.82107,0 13.910535,13.910535 0 1 1 27.82107,0 z"
+       transform="matrix(0.48913045,0,0,0.48913045,-466.71205,746.43586)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="path3078-0-9-8-4"
+       sodipodi:cx="160.27354"
+       sodipodi:cy="772.3371"
+       sodipodi:rx="13.910535"
+       sodipodi:ry="13.910535"
+       d="m 174.18408,772.3371 a 13.910535,13.910535 0 1 1 -27.82107,0 13.910535,13.910535 0 1 1 27.82107,0 z"
+       transform="matrix(0.50944225,0,0,0.50944225,-540.66952,796.57627)"
+       inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-file.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100" />
+    <g
+       id="g4117">
+      <rect
+         inkscape:export-ydpi="100"
+         inkscape:export-xdpi="100"
+         inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-closed.png"
+         y="900.62933"
+         x="-163.38312"
+         height="53.149605"
+         width="35.433071"
+         id="rect3178"
+         style="fill:none;stroke:none" />
+      <path
+         inkscape:export-ydpi="100"
+         inkscape:export-xdpi="100"
+         inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-closed.png"
+         transform="matrix(1.1462451,0,0,1.1462451,-329.37934,46.546443)"
+         d="m 174.18408,772.3371 a 13.910535,13.910535 0 1 1 -27.82107,0 13.910535,13.910535 0 1 1 27.82107,0 z"
+         sodipodi:ry="13.910535"
+         sodipodi:rx="13.910535"
+         sodipodi:cy="772.3371"
+         sodipodi:cx="160.27354"
+         id="path3078-5"
+         style="fill:#ffffff;fill-opacity:1;stroke:none"
+         sodipodi:type="arc" />
+    </g>
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect3178-3"
+       width="53.149605"
+       height="53.149605"
+       x="-390.06311"
+       y="827.41107" />
+    <rect
+       style="fill:none;stroke:none"
+       id="rect3178-9"
+       width="53.149605"
+       height="53.149605"
+       x="-221.92709"
+       y="1009.1552" />
+    <path
+       style="fill:none;stroke:#ffffff;stroke-width:2.4162879px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m -371.04839,827.07201 0,53.22291"
+       id="path3278"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g4123">
+      <rect
+         inkscape:export-ydpi="100"
+         inkscape:export-xdpi="100"
+         inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-opened.png"
+         transform="matrix(0,-1,1,0,0,0)"
+         y="-113.27584"
+         x="-1008.3399"
+         height="35.433071"
+         width="53.149605"
+         id="rect3178-5"
+         style="fill:none;stroke:none" />
+      <path
+         inkscape:export-ydpi="100"
+         inkscape:export-xdpi="100"
+         inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-opened.png"
+         inkscape:connector-curvature="0"
+         id="path3078-0-2"
+         d="m -111.52206,986.39502 c 0,8.80888 7.136,15.94488 15.944901,15.94488 8.8087,0 15.9806,-7.136 15.9806,-15.94488 0,-8.80883 -7.1719,-15.94488 -15.9806,-15.94488 -8.808901,0 -15.944901,7.13605 -15.944901,15.94488 z m 8.1695,0 c 0,-4.30867 3.466701,-7.8112 7.775401,-7.8112 4.3086,0 7.8111,3.50253 7.8111,7.8112 0,4.30866 -3.5025,7.81118 -7.8111,7.81118 -4.3087,0 -7.775401,-3.50252 -7.775401,-7.81118 z"
+         style="fill:#ffffff;fill-opacity:1;stroke:none" />
+    </g>
+    <g
+       id="g4099"
+       inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-line.png"
+       inkscape:export-xdpi="100"
+       inkscape:export-ydpi="100">
+      <rect
+         y="1112.5359"
+         x="-164.16815"
+         height="50.743656"
+         width="70.866142"
+         id="rect3178-3-6"
+         style="fill:none;stroke:none" />
+      <rect
+         ry="6.0480585"
+         y="1112.5359"
+         x="-135.82169"
+         height="50.743702"
+         width="14.173228"
+         id="rect3329"
+         style="fill:#ffffff;fill-opacity:1;stroke:none" />
+    </g>
+    <g
+       id="g4155">
+      <path
+         inkscape:export-ydpi="100"
+         inkscape:export-xdpi="100"
+         inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-file.png"
+         transform="matrix(0.50944225,0,0,0.50944225,-162.42886,696.37087)"
+         d="m 174.18408,772.3371 a 13.910535,13.910535 0 1 1 -27.82107,0 13.910535,13.910535 0 1 1 27.82107,0 z"
+         sodipodi:ry="13.910535"
+         sodipodi:rx="13.910535"
+         sodipodi:cy="772.3371"
+         sodipodi:cx="160.27354"
+         id="path3078-0-9-8-4-8"
+         style="fill:#ffffff;fill-opacity:1;stroke:none"
+         sodipodi:type="arc" />
+      <rect
+         inkscape:export-ydpi="100"
+         inkscape:export-xdpi="100"
+         inkscape:export-filename="D:\Portable\Files\Repos\ny-coder\res\ico\node-file.png"
+         transform="matrix(0,-1,1,0,0,0)"
+         y="-98.495277"
+         x="-1110.0846"
+         height="35.433071"
+         width="53.149605"
+         id="rect3178-5-4"
+         style="fill:none;stroke:none" />
+    </g>
   </g>
 </svg>

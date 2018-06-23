@@ -41,7 +41,7 @@ private:
 
     void ApplyLispMethodRules(HighlightingRule &rule);
     void ApplyNyquistMethodRule(HighlightingRule &rule);
-    void ApplyBlockCommentRule(HighlightingRule &rule);
+    void ApplyBlockCommentRule(HighlightingRule &);
     void ApplyInlineCommentRule(HighlightingRule &rule);
     void ApplyListRule(HighlightingRule &rule);
     void ApplyQuotationRule(HighlightingRule &rule);

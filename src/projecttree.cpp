@@ -1,5 +1,6 @@
 #include "projecttree.h"
 #include "projectitem.h"
+#include "logger.h"
 
 #include <QDir>
 
@@ -15,10 +16,16 @@ ProjectTree::ProjectTree(QTreeWidget *tree, QString path, QStringList filter)
     }
 }
 
+void ProjectTree::Reload()
+{
+    reload();
+}
+
 void ProjectTree::buildStructure()
 {
     QTreeWidgetItem *root = new QTreeWidgetItem(_tree, QStringList() << _name);
     processDirectory(root, _path);
+    _tree->expandAll();
 }
 
 QString ProjectTree::rootName(const QString &path)
@@ -46,11 +53,19 @@ void ProjectTree::processDirectory(QTreeWidgetItem *item, QString &path)
     foreach (QFileInfo info, infos) {
         QString p = info.absoluteFilePath();
         if (info.isDir()){
-            ProjectItem *child = new ProjectItem(item, QStringList() << rootName(p), p);
+            ProjectItem *child = new ProjectItem(item, QStringList() << rootName(p), p, true);
             processDirectory(child, p);
         } else {
-            if(info.fileName().contains(QRegExp(_filter)))
-            new ProjectItem(item, QStringList() << info.fileName(), p);
+            if(info.fileName().contains(QRegExp(_filter))){
+                new ProjectItem(item, QStringList() << info.fileName(), p, false);
+            }
         }
     }
+}
+
+void ProjectTree::reload()
+{
+    Logger::Write("reload");
+    _tree->clear();
+    buildStructure();
 }

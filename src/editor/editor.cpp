@@ -38,13 +38,13 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
     _extensionBar = new ExtensionBar(this);
 
     // autocompletion
-    completer = new QCompleter(this);
-    completer->setModel(modelFromFile("/home/krystian/Repo/ny-coder/bin/model.txt"));
-    completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
-    completer->setCaseSensitivity(Qt::CaseInsensitive);
-    //completer->setWrapAround(false);
+    _completer = new QCompleter(this);
+    _completer->setModel(CompletionModel());
+    _completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
+    _completer->setCaseSensitivity(Qt::CaseInsensitive);
+    _completer->setWrapAround(false);
 
-    SetCompleter(completer);
+    SetCompleter(_completer);
     //
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(UpdateLineNumberAreaWidth(int)));
@@ -61,7 +61,7 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
     #else
     setFont(QFont("Liberation Mono", 12, 1));
     #endif
-    SyntaxLisp *syntax = new SyntaxLisp(document());
+    new SyntaxLisp(document());
 
     LoadFile(filePath);
 }
@@ -71,8 +71,6 @@ Editor::~Editor(){
 
 void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
 {
-    Styler styler;
-
     QPainter painter(_extensionBar);
     painter.fillRect(event->rect(), Color("background"));
 
@@ -188,6 +186,7 @@ bool Editor::Save()
             document()->setModified(false);
             return true;
         }
+        return true;
     }
     else
     {
@@ -333,7 +332,7 @@ void Editor::focusInEvent(QFocusEvent *event)
     QPlainTextEdit::focusInEvent(event);
 }
 
-void Editor::UpdateLineNumberAreaWidth(int newBlockCount)
+void Editor::UpdateLineNumberAreaWidth(int)
 {
 setViewportMargins(LineNumberAreaWidth(), 0, 0, 0);
 }
@@ -345,7 +344,6 @@ void Editor::SelectCurrentLine()
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-        Styler styler;
         QColor lineColor = Color("selected-line");
 
         selection.format.setBackground(lineColor);
@@ -443,7 +441,7 @@ QAbstractItemModel *Editor::modelFromFile(const QString & fileName)
 {
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly))
-        return new QStringListModel(completer);
+        return new QStringListModel(_completer);
 
 #ifndef QT_NO_CURSOR
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -457,5 +455,10 @@ QAbstractItemModel *Editor::modelFromFile(const QString & fileName)
 #ifndef QT_NO_CURSOR
     QApplication::restoreOverrideCursor();
 #endif
-    return new QStringListModel(words, completer);
+    return new QStringListModel(words, _completer);
+}
+
+QAbstractItemModel *Editor::CompletionModel()
+{
+    return new QStringListModel(Storage::getInstance().completionData(), _completer);
 }

@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include <QApplication>
 #include <QFontDatabase>
+#include <QStyleHints>
 #include <src/storage/storagefile.h>
+#include <src/logger.h>
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +21,10 @@ int main(int argc, char *argv[])
     sf.SaveToFile("test2.settings", "Dane testowe");
     */
 
+    Logger::Write("start");
+
     QApplication a(argc, argv);
+
     MainWindow w;
     w.show();
 

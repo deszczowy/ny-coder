@@ -2,10 +2,13 @@
 #define RENDERAREA_H
 
 #include "frame.h"
+#include "plotdata.h"
 
 #include <QBrush>
+#include <QPainter>
 #include <QPen>
 #include <QPixmap>
+#include <QPushButton>
 #include <QWidget>
 
 class Canvas : public QWidget
@@ -25,9 +28,26 @@ private:
     QPen _pen;
     QBrush _brush;
     QString _file;
+    QPoint _canvasSize;
 
-    QPoint PointFromFrame(Frame &frame, QPoint canvasSize, double maxTime, int margin);
-    void PrintPointsFromFile(QString path);
+    QPainter *_painter;
+    PlotData *_plotData;
+
+    QPushButton *_closeButton;
+
+    int _margin;
+
+    QPoint PointFromFrame(Frame &frame, double maxTime);
+    void PrintPointsFromFile();
+
+    void PaintGrid();
+    void ReadPlotData();
+    void DropPlotData();
+
+    void AddCloseButton();
+
+private slots:
+    void onHide();
 };
 
 #endif // RENDERAREA_H

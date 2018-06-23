@@ -1,7 +1,6 @@
 #include "syntaxlisp.h"
 #include <src/storage/storage.h>
-
-#include <QDebug>
+#include <src/logger.h>
 
 SyntaxLisp::SyntaxLisp(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
@@ -62,7 +61,6 @@ void SyntaxLisp::ApplyLispMethodRules(HighlightingRule &rule)
     // applying rule
     foreach (const QString &pattern, Storage::getInstance().lispWordsRegEx())
     {
-        qDebug() << pattern;
         rule.pattern = QRegularExpression(
             pattern,
             QRegularExpression::CaseInsensitiveOption
@@ -81,10 +79,12 @@ void SyntaxLisp::ApplyNyquistMethodRule(HighlightingRule &rule)
     // select '<< "\\(' || help || '\\b"' from nldata where source = 'N' order by word desc;
 
     QStringList words(Storage::getInstance().nyquistWordsRegEx());
+    words << "\\bdupa\\b([ \\(\\)]|$)";
+
     // applying rule
     foreach (const QString &pattern, words)
     {
-        qDebug() << pattern;
+        //Logger::Write(pattern); // <- time penalty when executed
         rule.pattern = QRegularExpression(
             pattern,
             QRegularExpression::CaseInsensitiveOption
@@ -94,7 +94,7 @@ void SyntaxLisp::ApplyNyquistMethodRule(HighlightingRule &rule)
     }
 }
 
-void SyntaxLisp::ApplyBlockCommentRule(HighlightingRule &rule)
+void SyntaxLisp::ApplyBlockCommentRule(HighlightingRule &)
 {
     commentStartExpression = QRegularExpression("#\\|");
     commentEndExpression = QRegularExpression("\\|#");

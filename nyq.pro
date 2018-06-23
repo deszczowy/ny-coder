@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql svg xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -36,12 +36,15 @@ SOURCES += \
     src/nyquist.cpp \
     src/storage/storagefile.cpp \
     src/styler.cpp \
-    src/toolbox.cpp \
     src/storage/storage.cpp \
     src/preferences.cpp \
     src/plotter/canvas.cpp \
     src/plotter/frame.cpp \
-    src/plotter/plotdata.cpp
+    src/plotter/plotdata.cpp \
+    src/swiss.cpp \
+    src/storage/icon.cpp \
+    src/logger.cpp \
+    src/visual/nyactionbutton.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -55,12 +58,16 @@ HEADERS += \
     src/nyquist.h \
     src/storage/storagefile.h \
     src/styler.h \
-    src/toolbox.h \
     src/storage/storage.h \
     src/preferences.h \
     src/plotter/canvas.h \
     src/plotter/frame.h \
-    src/plotter/plotdata.h
+    src/plotter/plotdata.h \
+    src/swiss.h \
+    src/storage/icon.h \
+    src/storage/labels.h \
+    src/logger.h \
+    src/visual/nyactionbutton.h
 
 FORMS += \
         src/mainwindow.ui \

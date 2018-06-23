@@ -2,21 +2,36 @@
 
 #include <QFileInfo>
 
-ProjectItem::ProjectItem(QTreeWidgetItem *parent, QStringList nodeName, QString filePath)
-    : QTreeWidgetItem(parent, nodeName), fileName(""), filePath("")
+#include <src/storage/storage.h>
+#include <src/storage/labels.h>
+
+ProjectItem::ProjectItem(QTreeWidgetItem *parent, QStringList nodeName, QString filePath, bool isDirectory)
+    : QTreeWidgetItem(parent, nodeName), _filePath(""), _fileName("")
 {
+    _directory = isDirectory;
     if (QFile::exists(filePath)){
-        this->fileName = QFileInfo(filePath).fileName();
-        this->filePath = filePath;
+        _fileName = QFileInfo(filePath).fileName();
+        _filePath = filePath;
+    }
+
+    if (_directory){
+        setIcon(0, Storage::getInstance().icon(Labels::ICON_FOLDER_EMPTY));
+    } else {
+        setIcon(0, Storage::getInstance().icon(Labels::ICON_DOCUMENT_LISP));
     }
 }
 
 QString ProjectItem::getFilePath()
 {
-    return this->filePath;
+    return _filePath;
 }
 
 QString ProjectItem::getFileName()
 {
-    return this->fileName;
+    return _fileName;
+}
+
+bool ProjectItem::isDirectory()
+{
+    return _directory;
 }
