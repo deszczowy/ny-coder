@@ -7,6 +7,8 @@
 #include <QUuid>
 #include <QTabWidget>
 
+#include <src/nyprompter.h>
+
 class QPaintEvent;
 class QResizeEvent;
 class QWidget;
@@ -21,9 +23,6 @@ public:
     void LineNumberAreaPaintEvent(QPaintEvent *event);
     int LineNumberAreaWidth();
 
-    void SetCompleter(QCompleter *completer);
-    QCompleter *GetCompleter() const;
-
 
     QString Content();
     QString Path();
@@ -33,6 +32,7 @@ public:
     bool IsNew();
 
     void SetContext(int index, QTabWidget *widget);
+    void SetPrompter(NyPrompter *prompter);
 
 protected:
     void resizeEvent(QResizeEvent *event) override;
@@ -44,15 +44,13 @@ private slots:
     void UpdateLineNumberAreaWidth(int);
     void SelectCurrentLine();
     void UpdateLineNumberArea(const QRect &rect, int dy);
-    void InsertCompletion(const QString &completion);
+
     void SetModificationIndicator(bool modified);
     void IncorporateLineIntoList();
 
 private:
     QWidget *_extensionBar;
-    QCompleter *_completer;
-    QAbstractItemModel *completionModel;
-    QCompleter *completer;
+    NyPrompter *_prompter;
 
     QString _path;
     QString _fileName;
@@ -65,12 +63,12 @@ private:
     void CalculateIndent();
 
     QString TextUnderCursor() const;
-    QAbstractItemModel *modelFromFile(const QString & fileName);
-    QAbstractItemModel *CompletionModel();
 
     void LoadFile(QString path);
 
     QColor Color(QString themeField);
+
+    QRect PromptGeometry(QString word);
 };
 
 #endif // EDITOR_H

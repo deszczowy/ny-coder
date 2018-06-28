@@ -19,7 +19,7 @@
 #include <QCloseEvent>
 
 
-#include <src/editor/editor.h>
+#include "editor/editor.h"
 
 #include <src/storage/storagefile.h>
 #include <src/storage/labels.h>
@@ -46,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     EditorsSettings();
     OutputSettings();
     ConnectSlots();
+
+    _promptr = new NyPrompter(this);
 
     OpenNewTab("New", ""); //
     _controller.Start();
@@ -149,7 +151,7 @@ void MainWindow::CreateTransportButtons()
 
 void MainWindow::BindShortcuts()
 {
-    _doMenu->setShortcut(QKeySequence("Esc"));
+    //_doMenu->setShortcut(QKeySequence("Esc"));
 
     _doRunScript->setShortcut(QKeySequence("F5"));
     _doReplayLast->setShortcut(QKeySequence("F6"));
@@ -312,6 +314,9 @@ void MainWindow::CheckOutput(QString data)
 void MainWindow::OpenNewTab(QString fileName, QString path)
 {
     Editor *page = new Editor(ui->editorMain, path);
+    page->SetPrompter(_promptr);
+
+    //_prompter->Update("om", QRect(0 , 0, 100,100));
     int idx = ui->editorMain->addTab(page, fileName);
     page->SetContext(idx, ui->editorMain);
     page->setFocus();
@@ -491,6 +496,7 @@ void MainWindow::onQuit()
 
     if (go){
         _controller.Shutdown();
+        //delete _promptr;
         exit(0);
     }
 }

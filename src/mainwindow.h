@@ -18,8 +18,11 @@
 
 #include <src/visual/nyactionbutton.h>
 
+#include <src/editor/editor.h>
+
 #include "controller.h"
 #include "projecttree.h"
+#include "nyprompter.h"
 
 namespace Ui {
 class MainWindow;
@@ -159,10 +162,12 @@ private:
 private:
     Controller _controller;
 
-
 private:
     QString _pointsPath;
     Canvas *_canvas;
+
+private:
+    NyPrompter *_promptr;
 };
 
 #endif // MAINWINDOW_H

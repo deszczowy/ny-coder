@@ -33,19 +33,10 @@ padding: 5px;
 
 Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
 {
+    //_prompter = nullptr;
     _loaded = false;
 
     _extensionBar = new ExtensionBar(this);
-
-    // autocompletion
-    _completer = new QCompleter(this);
-    _completer->setModel(CompletionModel());
-    _completer->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
-    _completer->setCaseSensitivity(Qt::CaseInsensitive);
-    _completer->setWrapAround(false);
-
-    SetCompleter(_completer);
-    //
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(UpdateLineNumberAreaWidth(int)));
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(UpdateLineNumberArea(QRect,int)));
@@ -109,33 +100,6 @@ int Editor::LineNumberAreaWidth()
     return space;
 }
 
-void Editor::SetCompleter(QCompleter *completer)
-{
-    if (completer)
-    {
-        QObject::disconnect(completer, 0, this, 0);
-    }
-
-    _completer = completer;
-    if(!_completer) return;
-
-    _completer->setWidget(this);
-    _completer->setCompletionMode(QCompleter::PopupCompletion);
-    _completer->setCaseSensitivity(Qt::CaseInsensitive);
-
-    QObject::connect(
-        _completer,
-        SIGNAL(activated(QString)),
-        this,
-        SLOT(InsertCompletion(QString))
-                );
-}
-
-QCompleter *Editor::GetCompleter() const
-{
-    return _completer;
-}
-
 void Editor::LoadFile(QString path)
 {
     QString content("");
@@ -156,11 +120,31 @@ void Editor::LoadFile(QString path)
     }
     document()->setPlainText(content);    
     _loaded = true;
+
+    setWindowTitle(_fileName);
 }
 
 QColor Editor::Color(QString themeField)
 {
     return QColor(Storage::getInstance().themeValue(themeField));
+}
+
+QRect Editor::PromptGeometry(QString word)
+{
+    /*
+        editor position in relation to window + left gutter width + cursor position - word length in pixels
+    */
+    QRect t = geometry();
+    QRect e = _extensionBar->geometry();
+
+    QPoint w = mapTo(window(), t.topLeft());
+
+    QRect r = cursorRect();
+    QRect b = fontMetrics().boundingRect(word);
+    QRect g(w.x() + r.x() - b.width() + e.width(),
+            w.y() + r.y() + r.height() +2,
+            100, 200);
+    return g;
 }
 
 QString Editor::Content()
@@ -227,6 +211,11 @@ void Editor::SetContext(int index, QTabWidget *widget)
     _pages = widget;
 }
 
+void Editor::SetPrompter(NyPrompter *prompter)
+{
+    _prompter = prompter;
+}
+
 void Editor::resizeEvent(QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent(event);
@@ -237,18 +226,8 @@ void Editor::resizeEvent(QResizeEvent *event)
 
 void Editor::keyPressEvent(QKeyEvent *event)
 {
-    if (_completer && _completer->popup()->isVisible()){
-        switch (event->key()){
-        case Qt::Key_Enter:
-        case Qt::Key_Return:
-        case Qt::Key_Escape:
-        case Qt::Key_Tab:
-        case Qt::Key_Backtab:
-            event->ignore();
-            return;
-        default:
-            break;
-        }
+    if (_prompter && _prompter->IsPrompting()){
+        if(_prompter->ProcessKey(event)) return;
     }
 
     bool stop = false;
@@ -265,40 +244,15 @@ void Editor::keyPressEvent(QKeyEvent *event)
         break;
     }
 
-    // shortcut = ctrl+e
-    bool isShortCut = ((event->modifiers() & Qt::ControlModifier) && event->key() == Qt::Key_E);
-
     if (!stop){
-    if (!_completer || !isShortCut )
+
         QPlainTextEdit::keyPressEvent(event);
+
+        QString prefix = TextUnderCursor();
+
+        _prompter->Update(prefix, PromptGeometry(prefix));
+
     }
-
-    const bool ctrlOrShift = event->modifiers() & (Qt::ControlModifier | Qt::ShiftModifier);
-    if(!_completer || (ctrlOrShift && event->text().isEmpty()))
-        return;
-
-    static QString eow("~!@#$%^&*()_+{}|:\"<>?,./;'[]\\-=");
-    bool hasModifier = (event->modifiers() != Qt::NoModifier) && !ctrlOrShift;
-    QString completionPrefix = TextUnderCursor();
-
-    if (!isShortCut && (hasModifier || event->text().isEmpty() || completionPrefix.length() < 3 || eow.contains(event->text().right(1))))
-    {
-        _completer->popup()->hide();
-        return;
-    }
-
-    if (completionPrefix != _completer->completionPrefix())
-    {
-        _completer->setCompletionPrefix(completionPrefix);
-        _completer->popup()->setCurrentIndex(_completer->completionModel()->index(0, 0));
-    }
-
-    QRect rect = cursorRect();
-    rect.setWidth(_completer->popup()->sizeHintForColumn(0)
-                  + _completer->popup()->verticalScrollBar()->sizeHint().width()
-                  );
-
-    _completer->complete(rect);
 }
 
 void Editor::keyReleaseEvent(QKeyEvent *event)
@@ -326,9 +280,6 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
 
 void Editor::focusInEvent(QFocusEvent *event)
 {
-    if (_completer)
-        _completer->setWidget(this);
-
     QPlainTextEdit::focusInEvent(event);
 }
 
@@ -367,21 +318,6 @@ void Editor::UpdateLineNumberArea(const QRect &rect, int dy)
         UpdateLineNumberAreaWidth(0);
 }
 
-void Editor::InsertCompletion(const QString &completion)
-{
-    if(_completer->widget() != this)
-        return;
-
-    QTextCursor cursor = textCursor();
-
-    int extra = completion.length() - _completer->completionPrefix().length();
-
-    cursor.movePosition(QTextCursor::Left);
-    cursor.movePosition(QTextCursor::EndOfWord);
-    cursor.insertText(completion.right(extra));
-
-    setTextCursor(cursor);
-}
 
 void Editor::SetModificationIndicator(bool modified)
 {
@@ -435,30 +371,4 @@ QString Editor::TextUnderCursor() const
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::WordUnderCursor);
     return cursor.selectedText();
-}
-
-QAbstractItemModel *Editor::modelFromFile(const QString & fileName)
-{
-    QFile file(fileName);
-    if (!file.open(QFile::ReadOnly))
-        return new QStringListModel(_completer);
-
-#ifndef QT_NO_CURSOR
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-#endif
-    QStringList words;
-    while(!file.atEnd()){
-        QByteArray line = file.readLine();
-        if(!line.isEmpty())
-            words << line.trimmed();
-    }
-#ifndef QT_NO_CURSOR
-    QApplication::restoreOverrideCursor();
-#endif
-    return new QStringListModel(words, _completer);
-}
-
-QAbstractItemModel *Editor::CompletionModel()
-{
-    return new QStringListModel(Storage::getInstance().completionData(), _completer);
 }
