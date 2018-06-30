@@ -47,6 +47,7 @@ private slots:
 
     void SetModificationIndicator(bool modified);
     void IncorporateLineIntoList();
+    void onPrompt(QString prompted);
 
 private:
     QWidget *_extensionBar;

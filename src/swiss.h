@@ -14,6 +14,7 @@ namespace SwissArmyKnife
     double Min(double a, double b);
 
     double Max(double a, double b);
+       int Max(int a, int b);
 }
 
 #endif

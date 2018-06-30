@@ -12,6 +12,9 @@ class NyPrompter : public QWidget
 {
     Q_OBJECT
 
+signals:
+    void ApplyPrompt(QString prompted);
+
 public:
     explicit NyPrompter(QWidget *parent = 0);
     ~NyPrompter();
@@ -23,8 +26,11 @@ public:
 private:
     Ui::NyPrompter *ui;
     QCompleter *_completer;
+    QString _prefix;
 
     void FitContent();
+
+    QString TextToPrompt();
 };
 
 #endif // PROMPTER_H

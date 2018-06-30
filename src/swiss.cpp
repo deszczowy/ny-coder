@@ -34,4 +34,9 @@ double Max(double a, double b)
     return a > b ? a : b;
 }
 
+int Max(int a, int b)
+{
+    return a > b ? a : b;
+}
+
 }

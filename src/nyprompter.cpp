@@ -12,7 +12,6 @@ NyPrompter::NyPrompter(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
     _completer = new QCompleter(new QStringListModel(Storage::getInstance().completionData()), this);
     _completer->setCaseSensitivity(Qt::CaseInsensitive);
 
@@ -20,12 +19,16 @@ NyPrompter::NyPrompter(QWidget *parent) :
 
     setStyleSheet("QWidget{border:1px solid red;}");
 
+    ui->listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
     Qt::WindowFlags flags = windowFlags();
     flags |= Qt::WindowStaysOnTopHint;
     flags |= Qt::FramelessWindowHint;
     setWindowFlags(flags);
 
     setAutoFillBackground(false);
+
+    _prefix = "";
 }
 
 NyPrompter::~NyPrompter()
@@ -35,9 +38,11 @@ NyPrompter::~NyPrompter()
 
 void NyPrompter::Update(QString prefix, QRect geometry)
 {
-    if (prefix.length() > 1)
+    _prefix = prefix;
+
+    if (_prefix.length() > 1)
     {
-    _completer->setCompletionPrefix(prefix);
+    _completer->setCompletionPrefix(_prefix);
     ui->listWidget->clear();
 
     if (_completer->completionModel()->rowCount() == 0){
@@ -69,16 +74,20 @@ bool NyPrompter::ProcessKey(QKeyEvent *key)
     bool processed = true;
 
     if (key->key() == Qt::Key_Down){
-        ui->listWidget->setFocus();
+        //ui->listWidget->setFocus();
         ui->listWidget->selectAll();
     }
     else
     if (key->key() == Qt::Key_Up){
-        ui->listWidget->setFocus();
+        //ui->listWidget->setFocus();
         ui->listWidget->clearSelection();
     }
     else
     if (key->key() == Qt::Key_Escape){
+        hide();
+    }
+    if (key->key() == Qt::Key_Return){
+        emit ApplyPrompt(TextToPrompt());
         hide();
     }
     else{
@@ -104,4 +113,11 @@ void NyPrompter::FitContent()
     g.setHeight(h);
     g.setWidth(w);
     setGeometry(g);
+}
+
+QString NyPrompter::TextToPrompt()
+{
+    QString selected = "abcdefghijklmnopqrstuvwxyz";
+    int part = selected.length() - _prefix.length();
+    return selected.right(part);
 }

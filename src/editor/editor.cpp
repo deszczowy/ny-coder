@@ -17,6 +17,8 @@
 #include "syntaxlisp.h"
 
 #include <src/storage/storage.h>
+#include <src/logger.h>
+#include <src/swiss.h>
 
 /*
 QWidget
@@ -214,6 +216,7 @@ void Editor::SetContext(int index, QTabWidget *widget)
 void Editor::SetPrompter(NyPrompter *prompter)
 {
     _prompter = prompter;
+    connect(_prompter, SIGNAL(ApplyPrompt(QString)), this, SLOT(onPrompt(QString)));
 }
 
 void Editor::resizeEvent(QResizeEvent *event)
@@ -352,6 +355,11 @@ void Editor::IncorporateLineIntoList()
     moveCursor(QTextCursor::Right, QTextCursor::MoveAnchor);
 }
 
+void Editor::onPrompt(QString prompted)
+{
+    insertPlainText(prompted);
+}
+
 void Editor::CalculateIndent()
 {
     _indent = "";
@@ -368,7 +376,18 @@ void Editor::CalculateIndent()
 
 QString Editor::TextUnderCursor() const
 {
-    QTextCursor cursor = textCursor();
-    cursor.select(QTextCursor::WordUnderCursor);
-    return cursor.selectedText();
+    // all leters
+    QTextCursor c = textCursor();
+    int pos = c.positionInBlock();
+    c.select(QTextCursor::BlockUnderCursor);
+    QString s = c.selectedText();
+
+    int sp = s.lastIndexOf(' ', pos-1);
+    int par = s.lastIndexOf('(', pos-1);
+
+    sp = SwissArmyKnife::Max(sp, par);
+
+    //if (sp < 0) sp = 0; else
+        sp++;
+    return s.mid(sp, pos - sp).trimmed();
 }
