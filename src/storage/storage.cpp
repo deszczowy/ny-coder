@@ -158,13 +158,13 @@ void Storage::gatherCompletionData()
 {
     _completionData.clear();
 
-    QString sql("SELECT call FROM nldata");
+    QString sql("SELECT word FROM nldata");
     QSqlQuery q;
     q.prepare(sql);
     q.exec();
 
     if(q.record().count() > 0){
-        int vLabel = q.record().indexOf("call");
+        int vLabel = q.record().indexOf("word");
 
         while (q.next()){
             _completionData << q.value(vLabel).toString();

@@ -46,3 +46,4 @@ bin/*
 # deploy batch from template
 
 dep.bat
+*.backup

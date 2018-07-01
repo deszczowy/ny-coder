@@ -376,18 +376,16 @@ void Editor::CalculateIndent()
 
 QString Editor::TextUnderCursor() const
 {
-    // all leters
+    // all leters started with line begin, space or left parentheses
     QTextCursor c = textCursor();
-    int pos = c.positionInBlock();
+    int pos = c.positionInBlock()-1;
     c.select(QTextCursor::BlockUnderCursor);
-    QString s = c.selectedText();
-
-    int sp = s.lastIndexOf(' ', pos-1);
-    int par = s.lastIndexOf('(', pos-1);
+    QString s = c.selectedText().trimmed();
+    int sp = s.lastIndexOf(' ', pos);
+    int par = s.lastIndexOf('(', pos);
 
     sp = SwissArmyKnife::Max(sp, par);
 
-    //if (sp < 0) sp = 0; else
-        sp++;
-    return s.mid(sp, pos - sp).trimmed();
+    if (sp < 0) sp = 0; else sp++;
+    return s.mid(sp, pos -sp +1).trimmed();
 }

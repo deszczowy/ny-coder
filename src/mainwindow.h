@@ -22,7 +22,8 @@
 
 #include "controller.h"
 #include "projecttree.h"
-#include "nyprompter.h"
+
+#include <src/prompter/nyprompter.h>
 
 namespace Ui {
 class MainWindow;

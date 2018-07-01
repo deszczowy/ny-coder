@@ -27,8 +27,12 @@ private:
     Ui::NyPrompter *ui;
     QCompleter *_completer;
     QString _prefix;
+    int _selectedIndex;
 
     void FitContent();
+    void SelectNext();
+    void SelectPrevious();
+    void Deselect();
 
     QString TextToPrompt();
 };

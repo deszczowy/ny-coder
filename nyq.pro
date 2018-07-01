@@ -45,7 +45,7 @@ SOURCES += \
     src/storage/icon.cpp \
     src/logger.cpp \
     src/visual/nyactionbutton.cpp \
-    src/nyprompter.cpp
+    src/prompter/nyprompter.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -70,12 +70,12 @@ HEADERS += \
     src/logger.h \
     src/visual/nyactionbutton.h \
     src/editor/nyprompter.h \
-    src/nyprompter.h
+    src/prompter/nyprompter.h
 
 FORMS += \
         src/mainwindow.ui \
     src/preferences.ui \
-    src/nyprompter.ui
+    src/prompter/nyprompter.ui
 
 RESOURCES += \
     resources.qrc

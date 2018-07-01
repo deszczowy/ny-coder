@@ -7,7 +7,7 @@
 #include <QUuid>
 #include <QTabWidget>
 
-#include <src/nyprompter.h>
+#include <src/prompter/nyprompter.h>
 
 class QPaintEvent;
 class QResizeEvent;
