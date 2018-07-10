@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
+All rights reserved.
+This file is part of "Nyquist Coder" project licensed under MIT License.
+See LICENSE file in the project root for license information.
+
+Nyquist Copyright (c) by Roger B. Dannenberg
+Qt Framework Copyright (c) The Qt Company Ltd.
+*/
+
 #include "mainwindow.h"
 #include <ui_mainwindow.h>
 
@@ -49,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _promptr = new NyPrompter(this);
 
-    OpenNewTab("New", ""); //
+    OpenNewTab("New", "", ""); //
     _controller.Start();
 }
 
@@ -311,9 +321,9 @@ void MainWindow::CheckOutput(QString data)
     }
 }
 
-void MainWindow::OpenNewTab(QString fileName, QString path)
+void MainWindow::OpenNewTab(QString fileName, QString path, QString relative)
 {
-    Editor *page = new Editor(ui->editorMain, path);
+    Editor *page = new Editor(ui->editorMain, path, relative);
     page->SetPrompter(_promptr);
 
     //_prompter->Update("om", QRect(0 , 0, 100,100));
@@ -338,7 +348,15 @@ void MainWindow::onGo()
 
         if (canGo)
         {
-            QString localSrc = (e)->Path();
+
+            QString localSrc = "";
+            if (Storage::getInstance().projectLoaded())
+            {
+                localSrc = (e)->Relative();
+            } else {
+                localSrc = (e)->Path();
+            }
+
             if (localSrc != "")
             {
                 _controller.ExecuteFile(localSrc);
@@ -429,6 +447,7 @@ void MainWindow::onOpenFolder()
         ui->projectStructureView->clear();
         _project = new ProjectTree(ui->projectStructureView, dir, extensions);
         _controller.SetupProject(dir);
+        Storage::getInstance().projectLoaded(true);
     }
 }
 
@@ -527,7 +546,8 @@ void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int)
         if (!sourceFile->isDirectory()){
             OpenNewTab(
                         sourceFile->getFileName(),
-                        sourceFile->getFilePath()
+                        sourceFile->getFilePath(),
+                        sourceFile->getRelativePath()
             );
         }
     }

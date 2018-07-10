@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
+All rights reserved.
+This file is part of "Nyquist Coder" project licensed under MIT License.
+See LICENSE file in the project root for license information.
+
+Nyquist Copyright (c) by Roger B. Dannenberg
+Qt Framework Copyright (c) The Qt Company Ltd.
+*/
+
 #include <fstream>
 
 #include "editor.h"
@@ -33,7 +43,7 @@ padding: 5px;
 }
 */
 
-Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
+Editor::Editor(QWidget *parent, QString filePath, QString relative) : QPlainTextEdit(parent)
 {
     //_prompter = nullptr;
     _loaded = false;
@@ -55,6 +65,8 @@ Editor::Editor(QWidget *parent, QString filePath) : QPlainTextEdit(parent)
     setFont(QFont("Liberation Mono", 12, 1));
     #endif
     new SyntaxLisp(document());
+
+    _relative = relative;
 
     LoadFile(filePath);
 }
@@ -156,7 +168,17 @@ QString Editor::Content()
 
 QString Editor::Path()
 {
-    return _fileName;//_path;
+    return _path;
+}
+
+QString Editor::FileName()
+{
+    return _fileName;
+}
+
+QString Editor::Relative()
+{
+    return _relative;
 }
 
 bool Editor::Save()
@@ -194,6 +216,7 @@ bool Editor::SaveAs()
 
 
             QString fn = QFileInfo(name).fileName();
+            _fileName = fn;
             _pages->setTabText(_index, fn);
 
             return true;

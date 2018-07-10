@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
+All rights reserved.
+This file is part of "Nyquist Coder" project licensed under MIT License.
+See LICENSE file in the project root for license information.
+
+Nyquist Copyright (c) by Roger B. Dannenberg
+Qt Framework Copyright (c) The Qt Company Ltd.
+*/
+
 #include "storage.h"
 #include "labels.h"
 
@@ -67,8 +77,20 @@ QIcon Storage::icon(QString resource, QString color)
     return _icon.GetIcon(resource, color);
 }
 
+bool Storage::projectLoaded()
+{
+    return _projectLoaded;
+}
+
+void Storage::projectLoaded(bool isLoaded)
+{
+    _projectLoaded = isLoaded;
+}
+
 Storage::Storage()
 {
+    _projectLoaded = false;
+
     _setup = new StorageFile("nyc.setup");
     _theme = new StorageFile(_setup->Value("theme", "default"));
     _defaultTheme = new StorageFile("default");

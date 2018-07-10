@@ -18,6 +18,9 @@
 - envelope maker
 - equalizer
 - UPIC edit (?)
+- block reopen opened file tab
+- rooting project structure
+- mass logging
 
 ##Plan
 

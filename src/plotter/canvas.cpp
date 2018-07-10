@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
+All rights reserved.
+This file is part of "Nyquist Coder" project licensed under MIT License.
+See LICENSE file in the project root for license information.
+
+Nyquist Copyright (c) by Roger B. Dannenberg
+Qt Framework Copyright (c) The Qt Company Ltd.
+*/
+
 #include "canvas.h"
 #include "plotdata.h"
 
@@ -88,8 +98,8 @@ void Canvas::PaintGrid()
 {
     QPoint topLeft(1, 0);
     QPoint topRight(_canvasSize.x(), 0);
-    QPoint bottomLeft(1, _canvasSize.y() + _margin);
-    QPoint bottomRight(_canvasSize.x(), _canvasSize.y() + _margin);
+    QPoint bottomLeft(1, _canvasSize.y() + _margin -1);
+    QPoint bottomRight(_canvasSize.x(), _canvasSize.y() + _margin -1);
 
     QPoint zeroLeft(1, (_canvasSize.y() + _margin) / 2);
     QPoint zeroRight(_canvasSize.x(), (_canvasSize.y() + _margin) / 2);
@@ -97,8 +107,10 @@ void Canvas::PaintGrid()
     //_painter->setPen(QPen(QBrush(_pen.color()), 1, Qt::DotLine));
     //_painter->setBrush(_brush);
 
-    _painter->drawLine(topLeft, bottomLeft);
+    //_painter->drawLine(topLeft, bottomLeft);
     _painter->drawLine(zeroLeft, zeroRight);
+    //_painter->drawLine(topLeft, topRight);
+    //_painter->drawLine(bottomLeft, bottomRight);
 }
 
 void Canvas::ReadPlotData()

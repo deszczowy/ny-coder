@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
+All rights reserved.
+This file is part of "Nyquist Coder" project licensed under MIT License.
+See LICENSE file in the project root for license information.
+
+Nyquist Copyright (c) by Roger B. Dannenberg
+Qt Framework Copyright (c) The Qt Company Ltd.
+*/
+
 #ifndef EDITOR_H
 #define EDITOR_H
 
@@ -17,7 +27,7 @@ class Editor : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    Editor(QWidget *parent = 0, QString filePath = "");
+    Editor(QWidget *parent = 0, QString filePath = "", QString relative = "");
     ~Editor();
 
     void LineNumberAreaPaintEvent(QPaintEvent *event);
@@ -26,6 +36,8 @@ public:
 
     QString Content();
     QString Path();
+    QString FileName();
+    QString Relative();
 
     bool Save();
     bool SaveAs();
@@ -55,6 +67,8 @@ private:
 
     QString _path;
     QString _fileName;
+    QString _relative;
+
     bool _untitled;
     int _index;
     QTabWidget *_pages;
