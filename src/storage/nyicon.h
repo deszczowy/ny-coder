@@ -8,22 +8,20 @@ Nyquist Copyright (c) by Roger B. Dannenberg
 Qt Framework Copyright (c) The Qt Company Ltd.
 */
 
-#ifndef ACTION_H
-#define ACTION_H
+#ifndef ICON_H
+#define ICON_H
 
-enum Action: unsigned char
+#include <QDomDocument>
+#include <QIcon>
+
+class NyIcon
 {
-    // project
-    OpenFolder = 0,
+public:
+    NyIcon();
 
-    // workspace
-    SaveCurrentFile,
-    SaveCurrentFileAs,
-    SaveAllFiles,
-    CloseFile,
-
-    // application
-    Quit,
+    QIcon GetIcon(QString resource, QString color);
+private:
+    void SetAttrRecur(QDomElement elem, QString strattr, QString strattrval);
 };
 
-#endif // ACTION_H
+#endif // ICON_H

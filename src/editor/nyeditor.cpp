@@ -10,7 +10,7 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 
 #include <fstream>
 
-#include "editor.h"
+#include "nyeditor.h"
 #include "extensionbar.h"
 
 #include <QPainter>
@@ -30,24 +30,8 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #include <src/logger.h>
 #include <src/swiss.h>
 
-/*
-QWidget
+NyEditor::NyEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
-border: 0;
-background-color: #fff;
-}
-
-QTextEdit#Editor
-{
-padding: 5px;
-}
-*/
-
-Editor::Editor(QWidget *parent, QString filePath, QString relative) : QPlainTextEdit(parent)
-{
-    //_prompter = nullptr;
-    _loaded = false;
-
     _extensionBar = new ExtensionBar(this);
 
     connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(UpdateLineNumberAreaWidth(int)));
@@ -64,17 +48,14 @@ Editor::Editor(QWidget *parent, QString filePath, QString relative) : QPlainText
     #else
     setFont(QFont("Liberation Mono", 12, 1));
     #endif
+
     new SyntaxLisp(document());
-
-    _relative = relative;
-
-    LoadFile(filePath);
 }
 
-Editor::~Editor(){
+NyEditor::~NyEditor(){
 }
 
-void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
+void NyEditor::LineNumberAreaPaintEvent(QPaintEvent *event)
 {
     QPainter painter(_extensionBar);
     painter.fillRect(event->rect(), Color("background"));
@@ -100,7 +81,7 @@ void Editor::LineNumberAreaPaintEvent(QPaintEvent *event)
     }
 }
 
-int Editor::LineNumberAreaWidth()
+int NyEditor::LineNumberAreaWidth()
 {
     int digits = 1;
     int max = qMax(1, blockCount());
@@ -114,36 +95,13 @@ int Editor::LineNumberAreaWidth()
     return space;
 }
 
-void Editor::LoadFile(QString path)
-{
-    QString content("");
-    _path = "";
-    _untitled = true;
 
-    if (path != ""){
-        QFile file(path);
-        if (file.open(QFile::ReadOnly | QIODevice::Text))
-        {
-            _path = path;
-            _fileName = QFileInfo(path).fileName();
-            _untitled = false;
-
-            QTextStream in(&file);
-            content = in.readAll();
-        }
-    }
-    document()->setPlainText(content);    
-    _loaded = true;
-
-    setWindowTitle(_fileName);
-}
-
-QColor Editor::Color(QString themeField)
+QColor NyEditor::Color(QString themeField)
 {
     return QColor(Storage::getInstance().themeValue(themeField));
 }
 
-QRect Editor::PromptGeometry(QString word)
+QRect NyEditor::PromptGeometry(QString word)
 {
     /*
         editor position in relation to window + left gutter width + cursor position - word length in pixels
@@ -161,88 +119,35 @@ QRect Editor::PromptGeometry(QString word)
     return g;
 }
 
-QString Editor::Content()
+QString NyEditor::Content()
 {
     return toPlainText();
 }
 
-QString Editor::Path()
+void NyEditor::SetContent(QString content)
 {
-    return _path;
+    setPlainText(content);
 }
 
-QString Editor::FileName()
+void NyEditor::HasBeenSaved(QString name)
 {
-    return _fileName;
+    _pages->setTabText(_index, name);
+    document()->setModified(false);
 }
 
-QString Editor::Relative()
-{
-    return _relative;
-}
-
-bool Editor::Save()
-{
-    if (!IsNew())
-    {
-        std::ofstream out(_path.toStdString());
-        out << Content().toStdString();
-        out.close();
-
-        if (!out.bad())
-        {
-            document()->setModified(false);
-            return true;
-        }
-        return true;
-    }
-    else
-    {
-        return SaveAs();
-    }
-}
-
-bool Editor::SaveAs()
-{
-    QString name = QFileDialog::getSaveFileName(0, tr("Save file as..."), "~/", tr("Lisp source files (*.lsp)"));
-    if (name != "")
-    {
-        _path = name;
-        _untitled = false;
-
-        if(Save())
-        {
-            document()->setModified(false);
-
-
-            QString fn = QFileInfo(name).fileName();
-            _fileName = fn;
-            _pages->setTabText(_index, fn);
-
-            return true;
-        }
-    }
-    return false;
-}
-
-bool Editor::IsNew()
-{
-    return _untitled;
-}
-
-void Editor::SetContext(int index, QTabWidget *widget)
+void NyEditor::SetContext(int index, QTabWidget *widget)
 {
     _index = index;
     _pages = widget;
 }
 
-void Editor::SetPrompter(NyPrompter *prompter)
+void NyEditor::SetPrompter(NyPrompter *prompter)
 {
     _prompter = prompter;
     connect(_prompter, SIGNAL(ApplyPrompt(QString)), this, SLOT(onPrompt(QString)));
 }
 
-void Editor::resizeEvent(QResizeEvent *event)
+void NyEditor::resizeEvent(QResizeEvent *event)
 {
     QPlainTextEdit::resizeEvent(event);
 
@@ -250,7 +155,7 @@ void Editor::resizeEvent(QResizeEvent *event)
     _extensionBar->setGeometry(QRect(cr.left(), cr.top(), LineNumberAreaWidth(), cr.height()));
 }
 
-void Editor::keyPressEvent(QKeyEvent *event)
+void NyEditor::keyPressEvent(QKeyEvent *event)
 {
     if (_prompter && _prompter->IsPrompting()){
         if(_prompter->ProcessKey(event)) return;
@@ -281,7 +186,7 @@ void Editor::keyPressEvent(QKeyEvent *event)
     }
 }
 
-void Editor::keyReleaseEvent(QKeyEvent *event)
+void NyEditor::keyReleaseEvent(QKeyEvent *event)
 {
     switch (event->key()) {
     case Qt::Key_Enter:
@@ -304,17 +209,17 @@ void Editor::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
-void Editor::focusInEvent(QFocusEvent *event)
+void NyEditor::focusInEvent(QFocusEvent *event)
 {
     QPlainTextEdit::focusInEvent(event);
 }
 
-void Editor::UpdateLineNumberAreaWidth(int)
+void NyEditor::UpdateLineNumberAreaWidth(int)
 {
 setViewportMargins(LineNumberAreaWidth(), 0, 0, 0);
 }
 
-void Editor::SelectCurrentLine()
+void NyEditor::SelectCurrentLine()
 {
     QList<QTextEdit::ExtraSelection> extraSelections;
 
@@ -333,7 +238,7 @@ void Editor::SelectCurrentLine()
     setExtraSelections(extraSelections);
 }
 
-void Editor::UpdateLineNumberArea(const QRect &rect, int dy)
+void NyEditor::UpdateLineNumberArea(const QRect &rect, int dy)
 {
     if (dy)
         _extensionBar->scroll(0, dy);
@@ -345,26 +250,22 @@ void Editor::UpdateLineNumberArea(const QRect &rect, int dy)
 }
 
 
-void Editor::SetModificationIndicator(bool modified)
+void NyEditor::SetModificationIndicator(bool modified)
 {
-    if (_loaded){
-        QString caption = _pages->tabText(_index);
 
-        if (modified){
-            if (!caption.startsWith("* ")){
-                caption.prepend("* ");
-            }
-        } else {
-            if (caption.startsWith("* ")){
-                caption = caption.mid(2);
-            }
+    QString caption = _pages->tabText(_index);
+
+    if (modified){
+        if (!caption.startsWith("* ")){
+            caption.prepend("* ");
         }
-
-        _pages->setTabText(_index, caption);
     }
+
+    _pages->setTabText(_index, caption);
+
 }
 
-void Editor::IncorporateLineIntoList()
+void NyEditor::IncorporateLineIntoList()
 {
     QTextCursor cursor = textCursor();
     cursor.select(QTextCursor::LineUnderCursor);
@@ -378,12 +279,12 @@ void Editor::IncorporateLineIntoList()
     moveCursor(QTextCursor::Right, QTextCursor::MoveAnchor);
 }
 
-void Editor::onPrompt(QString prompted)
+void NyEditor::onPrompt(QString prompted)
 {
     insertPlainText(prompted);
 }
 
-void Editor::CalculateIndent()
+void NyEditor::CalculateIndent()
 {
     _indent = "";
     QTextCursor cursor = textCursor();
@@ -397,7 +298,7 @@ void Editor::CalculateIndent()
     }
 }
 
-QString Editor::TextUnderCursor() const
+QString NyEditor::TextUnderCursor() const
 {
     // all leters started with line begin, space or left parentheses
     QTextCursor c = textCursor();

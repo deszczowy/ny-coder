@@ -15,7 +15,7 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #include <QStringList>
 #include <QString>
 
-#include "icon.h"
+#include "nyicon.h"
 #include "storagefile.h"
 
 class Storage
@@ -49,7 +49,7 @@ private:
     StorageFile *_theme;
     StorageFile *_defaultTheme;
 
-    Icon _icon;
+    NyIcon _icon;
     bool _projectLoaded;
 
 private:

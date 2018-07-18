@@ -23,26 +23,26 @@ class QPaintEvent;
 class QResizeEvent;
 class QWidget;
 
-class Editor : public QPlainTextEdit
+class NyEditor : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    Editor(QWidget *parent = 0, QString filePath = "", QString relative = "");
-    ~Editor();
+    NyEditor(QWidget *parent = 0);
+    ~NyEditor();
 
     void LineNumberAreaPaintEvent(QPaintEvent *event);
     int LineNumberAreaWidth();
 
 
     QString Content();
-    QString Path();
-    QString FileName();
-    QString Relative();
 
-    bool Save();
-    bool SaveAs();
-    bool IsNew();
 
+
+public:
+    void HasBeenSaved(QString name);
+    void SetContent(QString content);
+
+public:
     void SetContext(int index, QTabWidget *widget);
     void SetPrompter(NyPrompter *prompter);
 
@@ -65,23 +65,17 @@ private:
     QWidget *_extensionBar;
     NyPrompter *_prompter;
 
-    QString _path;
-    QString _fileName;
-    QString _relative;
-
-    bool _untitled;
-    int _index;
+private:
     QTabWidget *_pages;
-    bool _loaded;
+    int _index;
 
+private:
     QString _indent;
-    void CalculateIndent();
 
-    QString TextUnderCursor() const;
-
-    void LoadFile(QString path);
+    void CalculateIndent();    
 
     QColor Color(QString themeField);
+    QString TextUnderCursor() const;
 
     QRect PromptGeometry(QString word);
 };

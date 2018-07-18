@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
 All rights reserved.
 This file is part of "Nyquist Coder" project licensed under MIT License.
@@ -28,12 +28,15 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 
 #include <src/visual/nyactionbutton.h>
 
-#include <src/editor/editor.h>
+#include <src/editor/nyeditor.h>
 
 #include "controller.h"
-#include "projecttree.h"
 
 #include <src/prompter/nyprompter.h>
+
+#include <src/project/nyprojectmodel.h>
+
+#include <src/nyquist/nyoutputanalyzer.h>
 
 namespace Ui {
 class MainWindow;
@@ -53,6 +56,7 @@ public:
 private:
     void BaseUiSettings();
     void BuildMenu();
+    void BuildProjectMenu();
     void BuildWorkspace();
     void CheckOutput(QString data);
     void ConnectSlots();
@@ -60,7 +64,7 @@ private:
     void CreateTransportButtons();
     void DestroyMenuNodes();
     void EditorsSettings();
-    void OpenNewTab(QString fileName, QString path, QString relative);
+    void OpenNewTab(const QModelIndex &index);
     void OutputSettings();
     bool SaveAllFiles();
     void SetupTheme();
@@ -78,9 +82,12 @@ private slots:
     void onGo();
     void onMenu();
     void onOpenFolder();
-    void onProjectElementSelection(QTreeWidgetItem *item, int);
+    void onPlot();
+    void onProjectElementSelection(const QModelIndex &index);
+    void onProjectMenuRequest(const QPoint &point);
     void onRefresh();
     void onReloadProject();
+    void onRenameNode();
     void onReplayLast();
     void onSaveAllFiles();
     void onSaveCurrentFile();
@@ -143,13 +150,19 @@ private:
     // custom
     QAction *_doTest;
 
+    // project tree
+    QAction *_doAddElement;
+    QAction *_doRenameElement;
+    QAction *_doRemoveElement;
+    QAction *_doFoldNode;
+    QAction *_doUnfoldNode;
 
 private:
     QMenu *_mainMenu;
     QMenu *_projectMenu;
     QMenu *_viewMenu;
     QMenu *_nyquistMenu;
-
+    QMenu *_projectTreeMenu;
 
 private:
     Ui::MainWindow *ui;
@@ -157,9 +170,11 @@ private:
     bool _maximized;
     bool _allowQuit;
 
+private:
+    NyProjectModel *_project;
+    NyOutputAnalyzer *_analyzer;
 
 private:
-    ProjectTree *_project;
     QSplitter *_mainSplitter;
     QSplitter *_workspaceSplitter;
     QSplitter *_editorSplitter;

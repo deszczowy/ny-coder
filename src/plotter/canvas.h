@@ -27,7 +27,7 @@ class Canvas : public QWidget
 
 public:
     Canvas(QWidget *parent = 0);
-    void Plot(QString file);
+    void Plot(QString file, double duration);
     void SetPen(QColor penColor);
     void SetBrush(QColor brushColor);
 
@@ -46,6 +46,8 @@ private:
     QPushButton *_closeButton;
 
     int _margin;
+
+    double _duration;
 
     QPoint PointFromFrame(Frame &frame, double maxTime);
     void PrintPointsFromFile();

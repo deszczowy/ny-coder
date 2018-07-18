@@ -22,9 +22,10 @@ Canvas::Canvas(QWidget *parent)
     AddCloseButton();
 }
 
-void Canvas::Plot(QString file)
+void Canvas::Plot(QString file, double duration)
 {
     _file = file;
+    _duration = duration;
     update();
 }
 
@@ -59,8 +60,6 @@ QPoint Canvas::PointFromFrame(Frame &frame, double maxTime)
 
 void Canvas::PrintPointsFromFile()
 {
-
-
     _margin = 40;
     QRect canvas(1, 1, width() -2, height() -2);
     _canvasSize = QPoint(canvas.width(), canvas.height() -_margin);
@@ -111,6 +110,34 @@ void Canvas::PaintGrid()
     _painter->drawLine(zeroLeft, zeroRight);
     //_painter->drawLine(topLeft, topRight);
     //_painter->drawLine(bottomLeft, bottomRight);
+
+    QPen pen = _painter->pen();
+    pen.setStyle(Qt::DotLine);
+    _painter->setPen(pen);
+
+    double step = _duration / 5;
+    double x = step;
+    QList<Frame> list;
+
+    for (int i = 0; i < 4; ++i){
+        list.append(Frame(x, -1));
+        list.append(Frame(x, 1));
+        x += step;
+    }
+
+    int i = 0;
+    QPoint p0;
+    QPoint p1;
+    foreach (Frame frame, list) {
+        if (i % 2 == 0){
+            p0 = PointFromFrame(frame, _plotData->Length());
+        } else {
+            p1 = PointFromFrame(frame, _plotData->Length());
+            _painter->drawLine(p0, p1);
+        }
+        ++i;
+    }
+    _painter->setPen(_pen);
 }
 
 void Canvas::ReadPlotData()

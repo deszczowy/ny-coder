@@ -27,10 +27,7 @@ win32:RC_ICONS += res/ico/application.ico
 SOURCES += \
         src/main.cpp \
         src/mainwindow.cpp \
-    src/projectitem.cpp \
-    src/projecttree.cpp \
     src/editor/syntaxlisp.cpp \
-    src/editor/editor.cpp \
     src/editor/extensionbar.cpp \
     src/controller.cpp \
     src/nyquist.cpp \
@@ -42,20 +39,21 @@ SOURCES += \
     src/plotter/frame.cpp \
     src/plotter/plotdata.cpp \
     src/swiss.cpp \
-    src/storage/icon.cpp \
     src/logger.cpp \
     src/visual/nyactionbutton.cpp \
-    src/prompter/nyprompter.cpp
+    src/prompter/nyprompter.cpp \
+    src/project/nyprojectitem.cpp \
+    src/storage/nyicon.cpp \
+    src/project/nyprojectmodel.cpp \
+    src/editor/nyeditor.cpp \
+    src/nyquist/nyoutputanalyzer.cpp \
+    src/nynodedialog.cpp
 
 HEADERS += \
         src/mainwindow.h \
-    src/projectitem.h \
-    src/projecttree.h \
     src/editor/syntaxlisp.h \
-    src/editor/editor.h \
     src/editor/extensionbar.h \
     src/controller.h \
-    src/action.h \
     src/nyquist.h \
     src/storage/storagefile.h \
     src/styler.h \
@@ -65,17 +63,23 @@ HEADERS += \
     src/plotter/frame.h \
     src/plotter/plotdata.h \
     src/swiss.h \
-    src/storage/icon.h \
     src/storage/labels.h \
     src/logger.h \
     src/visual/nyactionbutton.h \
     src/editor/nyprompter.h \
-    src/prompter/nyprompter.h
+    src/prompter/nyprompter.h \
+    src/project/nyprojectitem.h \
+    src/storage/nyicon.h \
+    src/project/nyprojectmodel.h \
+    src/editor/nyeditor.h \
+    src/nyquist/nyoutputanalyzer.h \
+    src/nynodedialog.h
 
 FORMS += \
         src/mainwindow.ui \
     src/preferences.ui \
-    src/prompter/nyprompter.ui
+    src/prompter/nyprompter.ui \
+    src/nynodedialog.ui
 
 RESOURCES += \
     resources.qrc

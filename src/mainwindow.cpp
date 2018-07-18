@@ -11,9 +11,9 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #include "mainwindow.h"
 #include <ui_mainwindow.h>
 
+#include "nynodedialog.h"
 #include "preferences.h"
 
-#include "projectitem.h"
 #include <src/storage/storage.h>
 #include <src/styler.h>
 #include <src/logger.h>
@@ -29,7 +29,7 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #include <QCloseEvent>
 
 
-#include "editor/editor.h"
+#include "editor/nyeditor.h"
 
 #include <src/storage/storagefile.h>
 #include <src/storage/labels.h>
@@ -48,18 +48,19 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    _promptr = new NyPrompter(this);
+    _analyzer = new NyOutputAnalyzer();
+
     CreateActions();
 
     BaseUiSettings();
     BuildMenu();
+    BuildProjectMenu();
     SetupTheme();
     EditorsSettings();
     OutputSettings();
     ConnectSlots();
 
-    _promptr = new NyPrompter(this);
-
-    OpenNewTab("New", "", ""); //
     _controller.Start();
 }
 
@@ -118,7 +119,10 @@ void MainWindow::ConnectSlots()
     connect(ui->editorMain, SIGNAL(tabCloseRequested(int)), this, SLOT(onCLoseTab(int)));
 
     // project
-    connect(ui->projectStructureView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(onProjectElementSelection(QTreeWidgetItem*,int)) );
+    connect(ui->projectStructureView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onProjectElementSelection(QModelIndex)) );
+
+    // output
+    connect(_analyzer, SIGNAL(Plot()), this, SLOT(onPlot()) );
 }
 
 void MainWindow::CreatePlotterCanvas()
@@ -299,70 +303,41 @@ void MainWindow::onFinished(int, QProcess::ExitStatus){}
 
 void MainWindow::CheckOutput(QString data)
 {
-    // read plot points file path from output
-    int start = data.indexOf("s-plot: writing ");
-    int end = -1;
-    QString path = "";
-
-    if (start >= 0){
-        end = data.indexOf(" ...");
-        if (end > start){
-            start += 16;
-            path = data.mid(start, end - start);
-            _pointsPath = path;
-
-            Logger::Write(path);
-        }
-    }
-
-    if (data.indexOf(" points from") >= 0) {
-        _canvas->setVisible(true);
-        _canvas->Plot(_pointsPath);
-    }
+    _analyzer->Analyze(data);
 }
 
-void MainWindow::OpenNewTab(QString fileName, QString path, QString relative)
+void MainWindow::OpenNewTab(const QModelIndex &index)
 {
-    Editor *page = new Editor(ui->editorMain, path, relative);
+
+    NyEditor *page = new NyEditor(ui->editorMain);
     page->SetPrompter(_promptr);
 
-    //_prompter->Update("om", QRect(0 , 0, 100,100));
-    int idx = ui->editorMain->addTab(page, fileName);
+    int idx = ui->editorMain->addTab(page, "");
     page->SetContext(idx, ui->editorMain);
     page->setFocus();
-    page->document()->setModified(false);
     ui->editorMain->setCurrentIndex(idx);
+
+    if (index.isValid()){
+        NyProjectItem *item = static_cast<NyProjectItem*>(index.internalPointer());
+        item->Open(true, page);
+    }
 }
 
 void MainWindow::onGo()
 {
     Logger::Write("Run script");
-    Editor *e = (Editor*)ui->editorMain->currentWidget();
-    bool canGo = true;
+    NyEditor *e = (NyEditor*)ui->editorMain->currentWidget();
+    if (!e) return;
 
-    if (e)
-    {
-        if (e->document()->isModified()){
-            canGo = e->Save();
-        }
+    QString localSrc = _project->ScriptToRun(e);
+    if ("" == localSrc) return;
 
-        if (canGo)
-        {
-
-            QString localSrc = "";
-            if (Storage::getInstance().projectLoaded())
-            {
-                localSrc = (e)->Relative();
-            } else {
-                localSrc = (e)->Path();
-            }
-
-            if (localSrc != "")
-            {
-                _controller.ExecuteFile(localSrc);
-            }
-        }
+    Logger::Write(localSrc);
+    if (e->document()->isModified()){
+        _project->SaveEdited(e);
     }
+
+    _controller.ExecuteFile(localSrc);
 }
 
 void MainWindow::onReplayLast()
@@ -398,11 +373,12 @@ void MainWindow::onRefresh()
 
 void MainWindow::onTest()
 {
-    QStringList extensions;
-    extensions << ".lsp" << ".lisp";
-    ui->projectStructureView->clear();
     QString dir = "D:/Programy/Nyquist/jnyqide/Nyq";
-    _project = new ProjectTree(ui->projectStructureView, dir, extensions);
+    _project = new NyProjectModel(dir, this);
+
+    ui->projectStructureView->setModel(_project);
+    ui->projectStructureView->expandAll();
+
     _controller.SetupProject(dir);
 }
 
@@ -438,41 +414,85 @@ void MainWindow::onToggleProjectTree()
 
 void MainWindow::onOpenFolder()
 {
-    QStringList extensions;
-    extensions << ".lsp" << ".lisp";
-
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (dir != "")
     {
-        ui->projectStructureView->clear();
-        _project = new ProjectTree(ui->projectStructureView, dir, extensions);
+        _project = new NyProjectModel(dir, this);
+        ui->projectStructureView->setModel(_project);
+        ui->projectStructureView->expandAll();
         _controller.SetupProject(dir);
         Storage::getInstance().projectLoaded(true);
+    }
+}
+
+void MainWindow::onPlot()
+{
+    _canvas->setVisible(true);
+    _canvas->Plot(
+                _analyzer->PointsPath(),
+                _analyzer->SoundDuration()
+             );
+}
+
+void MainWindow::onProjectElementSelection(const QModelIndex &index)
+{
+    NyProjectItem *sourceFile = static_cast<NyProjectItem*>(index.internalPointer());
+    if (sourceFile){
+        bool isFile = !sourceFile->IsDirectory();
+        bool isReady = !sourceFile->IsOpen();
+
+        if (isFile && isReady){
+            OpenNewTab(index);
+        }
+    }
+
+}
+
+void MainWindow::onProjectMenuRequest(const QPoint &point)
+{
+    QModelIndex index = ui->projectStructureView->indexAt(point);
+    if (index.isValid()) {
+        NyProjectItem *item = static_cast<NyProjectItem*>(index.internalPointer());
+
+        if (item->IsDirectory()){
+            _doAddElement->setVisible(true);
+            _doFoldNode->setVisible(true);
+            _doUnfoldNode->setVisible(true);
+        } else {
+            _doAddElement->setVisible(false);
+            _doFoldNode->setVisible(false);
+            _doUnfoldNode->setVisible(false);
+        }
+        _projectTreeMenu->exec(ui->projectStructureView->mapToGlobal(point));
     }
 }
 
 void MainWindow::onReloadProject()
 {
     if (_project && SaveAllFiles()){
-        _project->Reload();
+        //_project->Reload(); //!!
     }
+}
+
+void MainWindow::onRenameNode()
+{
+    NyNodeDialog *dialog = new NyNodeDialog();
+    dialog->exec();
 }
 
 void MainWindow::onSaveCurrentFile()
 {
-    Editor *e = (Editor*)ui->editorMain->currentWidget();
-    bool needReload = e->IsNew();
-    if(e->Save() && needReload){
-        _project->Reload();
-    }
+    NyEditor *e = (NyEditor*)ui->editorMain->currentWidget();
+    _project->SaveEdited(e);
 }
 
 void MainWindow::onSaveCurrentFileAs()
 {
-    Editor *e = (Editor*)ui->editorMain->currentWidget();
-    if(e->SaveAs()){
-        _project->Reload();
-    }
+    NyEditor *e = (NyEditor*)ui->editorMain->currentWidget();
+    QString name = QFileDialog::getSaveFileName(0, QObject::tr("Save file as..."), _project->RootPath(), QObject::tr("Lisp source files (*.lsp)"));
+
+    _project->SaveEditedAs(name, e);
+    ui->projectStructureView->expandAll();
 }
 
 void MainWindow::onSaveAllFiles()
@@ -489,7 +509,7 @@ void MainWindow::onQuit()
 {
     bool go = true;
     for (int i = 0; i < ui->editorMain->count(); i++){
-        Editor *editor = (Editor*)ui->editorMain->widget(i);
+        NyEditor *editor = (NyEditor*)ui->editorMain->widget(i);
         if (editor->document()->isModified()){
 
             int ret = QMessageBox::question(this, tr("Question"),
@@ -515,42 +535,18 @@ void MainWindow::onQuit()
 
     if (go){
         _controller.Shutdown();
-        //delete _promptr;
         exit(0);
     }
 }
 
 bool MainWindow::SaveAllFiles()
 {
-    bool go = true;
-    for (int i = 0; i < ui->editorMain->count(); i++){
-        Editor *editor = (Editor*)ui->editorMain->widget(i);
-        if (go){
-            go = editor->Save();
-
-            if (!go) break;
-        }
-    }
-    return go;
+    return _project->SaveAll();
 }
 
 void MainWindow::onQuitApplication()
 {
     onQuit();
-}
-
-void MainWindow::onProjectElementSelection(QTreeWidgetItem *item, int)
-{
-    ProjectItem *sourceFile = dynamic_cast<ProjectItem*>(item);
-    if (sourceFile){
-        if (!sourceFile->isDirectory()){
-            OpenNewTab(
-                        sourceFile->getFileName(),
-                        sourceFile->getFilePath(),
-                        sourceFile->getRelativePath()
-            );
-        }
-    }
 }
 
 //
@@ -614,6 +610,24 @@ void MainWindow::BuildMenu()
     _mainMenu->addAction(_doTest);
 }
 
+void MainWindow::BuildProjectMenu()
+{
+    ui->projectStructureView->setContextMenuPolicy(Qt::CustomContextMenu);
+    _projectTreeMenu = new QMenu(ui->projectStructureView);
+    _projectTreeMenu->addAction(_doAddElement);
+    _projectTreeMenu->addAction(_doRenameElement);
+    _projectTreeMenu->addAction(_doRemoveElement);
+    _projectTreeMenu->addAction(_doFoldNode);
+    _projectTreeMenu->addAction(_doUnfoldNode);
+
+    connect(_doRenameElement, SIGNAL(triggered(bool)), this, SLOT(onRenameNode()));
+    connect(
+        ui->projectStructureView,
+        SIGNAL(customContextMenuRequested(const QPoint &)), this,
+        SLOT(onProjectMenuRequest(QPoint))
+    );
+}
+
 void MainWindow::BuildWorkspace()
 {
     CreateTransportButtons();
@@ -661,7 +675,7 @@ void MainWindow::onCLoseTab(int index)
 {
     bool go = true;
 
-    Editor *e = (Editor*)ui->editorMain->currentWidget();
+    NyEditor *e = (NyEditor*)ui->editorMain->currentWidget();
     int indx = ui->editorMain->currentIndex();
 
     if (indx != index && index >= 0){
@@ -678,7 +692,7 @@ void MainWindow::onCLoseTab(int index)
                                        QMessageBox::Save);
         switch (ret) {
         case QMessageBox::Save:
-            go = e->Save();
+            //go = e->Save();
             break;
         case QMessageBox::Cancel:
             go = false;
@@ -690,6 +704,7 @@ void MainWindow::onCLoseTab(int index)
 
     if (go){
         ui->editorMain->removeTab(indx);
+        _project->CloseEdited(e);
     }
 }
 
@@ -725,6 +740,13 @@ void MainWindow::CreateActions()
     _doQuit = new QAction("Quit", this);
 
     _doTest = new QAction("Test", this);
+
+    _doAddElement = new QAction("Add", this);
+    _doRenameElement = new QAction("Rename", this);
+    _doRemoveElement = new QAction("Remove", this);
+    _doFoldNode = new QAction("Fold", this);
+    _doUnfoldNode = new QAction("Unfold", this);
+
 
     BindShortcuts();
     BindSlots();
@@ -762,4 +784,11 @@ void MainWindow::DestroyActions()
 
     delete _doQuit;
     delete _doTest;
+
+    delete _doAddElement;
+    delete _doRenameElement;
+    delete _doRemoveElement;
+    delete _doFoldNode;
+    delete _doUnfoldNode;
+
 }

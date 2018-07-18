@@ -13,12 +13,12 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 
 #include <QWidget>
 
-class Editor;
+class NyEditor;
 
 class ExtensionBar : public QWidget
 {
 public:
-    ExtensionBar(Editor *editor);
+    ExtensionBar(NyEditor *editor);
 
     QSize sizeHint() const override;
 
@@ -26,7 +26,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
 
 private:
-    Editor *connectedEditor;
+    NyEditor *connectedEditor;
 };
 
 #endif // EXTENSIONBAR_H

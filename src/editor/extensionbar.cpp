@@ -10,9 +10,9 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 
 #include "extensionbar.h"
 
-#include "editor.h"
+#include "nyeditor.h"
 
-ExtensionBar::ExtensionBar(Editor *parent) : QWidget(parent)
+ExtensionBar::ExtensionBar(NyEditor *parent) : QWidget(parent)
 {
     connectedEditor = parent;
 }

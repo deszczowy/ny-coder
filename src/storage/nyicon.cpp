@@ -8,17 +8,17 @@ Nyquist Copyright (c) by Roger B. Dannenberg
 Qt Framework Copyright (c) The Qt Company Ltd.
 */
 
-#include "icon.h"
+#include "nyicon.h"
 
 #include <QFile>
 #include <QPainter>
 #include <QSvgRenderer>
 
-Icon::Icon()
+NyIcon::NyIcon()
 {
 }
 
-QIcon Icon::GetIcon(QString resource, QString color)
+QIcon NyIcon::GetIcon(QString resource, QString color)
 {
 
     // open svg resource load contents to qbytearray
@@ -45,7 +45,7 @@ QIcon Icon::GetIcon(QString resource, QString color)
 }
 
 
-void Icon::SetAttrRecur(QDomElement elem, QString strattr, QString strattrval)
+void NyIcon::SetAttrRecur(QDomElement elem, QString strattr, QString strattrval)
 {
     if (elem.attribute("id").compare("icon-body") == 0)
     {

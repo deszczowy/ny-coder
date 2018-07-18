@@ -86,17 +86,12 @@
            </widget>
           </item>
           <item>
-           <widget class="QTreeWidget" name="projectStructureView">
+           <widget class="QTreeView" name="projectStructureView">
             <property name="font">
              <font>
               <pointsize>12</pointsize>
              </font>
             </property>
-            <column>
-             <property name="text">
-              <string/>
-             </property>
-            </column>
            </widget>
           </item>
          </layout>
