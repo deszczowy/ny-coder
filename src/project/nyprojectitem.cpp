@@ -26,7 +26,12 @@ NyProjectItem::NyProjectItem(const QString absoluteFilePath, const QString proje
     _isValid = false;
     _isOpen = false;
 
-    SetFile(absoluteFilePath, projectRootPath);
+    if (0 == absoluteFilePath.compare("$")){
+        SetFile(QDir::currentPath(), "");
+        _fileName = projectRootPath;
+    } else {
+        SetFile(absoluteFilePath, projectRootPath);
+    }
 
     if (_isDirectory){
         _icon = Storage::getInstance().icon(Labels::ICON_FOLDER_EMPTY);
@@ -139,6 +144,21 @@ void NyProjectItem::Open(bool open, NyEditor *editor)
 
     _editor->SetContent(content);
     _editor->HasBeenSaved(_fileName);
+}
+
+void NyProjectItem::Rename(QString newName)
+{
+    // rename is done in place
+    QString newPath = QFileInfo(_absolutePath).absolutePath();
+    newPath.append("/");
+    newPath.append(newName);
+
+    if (QFile::copy(_absolutePath, newPath)){
+        QFile::remove(_absolutePath);
+
+        _fileName = newName;
+        _absolutePath = newPath;
+    }
 }
 
 void NyProjectItem::ConnectEditor(NyEditor *editor)

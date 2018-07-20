@@ -28,12 +28,15 @@ public:
     bool SaveAll();
     bool SaveEdited(NyEditor *editor);
     bool SaveEditedAs(QString newPath, NyEditor *editor);
+    bool RenameIndex(QModelIndex index, QString newName);
     bool CloseEdited(NyEditor *editor);
 
     QString RootPath();
     QString ScriptToRun(NyEditor *editor);
+    QString FileNameOfIndex(QModelIndex index);
 
     QModelIndex FindEdited(NyProjectItem *root, NyEditor *editor);
+
 
 private:
     void Load(QString localisation, NyProjectItem *parent);

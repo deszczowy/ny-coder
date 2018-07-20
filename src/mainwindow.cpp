@@ -476,8 +476,16 @@ void MainWindow::onReloadProject()
 
 void MainWindow::onRenameNode()
 {
+    QString current = "";
+    QModelIndex selected = ui->projectStructureView->currentIndex();
+    current = _project->FileNameOfIndex(selected);
     NyNodeDialog *dialog = new NyNodeDialog();
+    dialog->Set(current);
     dialog->exec();
+
+    if (dialog->Response()){
+        _project->RenameIndex(selected, dialog->Value());
+    }
 }
 
 void MainWindow::onSaveCurrentFile()

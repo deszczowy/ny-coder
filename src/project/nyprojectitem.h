@@ -34,6 +34,7 @@ public:
     void SetFile(QString path, QString root);
     void Open(NyEditor *editor);
     void Open(bool open, NyEditor *editor);
+    void Rename(QString newName);
     void ConnectEditor(NyEditor *editor);
     void Close();
     void Save();

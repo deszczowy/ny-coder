@@ -8,7 +8,7 @@ NyProjectModel::NyProjectModel(const QString projectBasePath, QObject *parent)
     QDir directory(projectBasePath);
     _mainRoot = new NyProjectItem("Root", "", (NyProjectItem*)parent);
     _projectRoot = new NyProjectItem(projectBasePath, "", _mainRoot);
-    _sideRoot = new NyProjectItem("Other", "", _mainRoot);
+    _sideRoot = new NyProjectItem("$", "Other", _mainRoot);
 
     _mainRoot->AppendChild(_projectRoot);
     _mainRoot->AppendChild(_sideRoot);
@@ -157,6 +157,16 @@ bool NyProjectModel::SaveEditedAs(QString newPath, NyEditor *editor)
     }
 }
 
+bool NyProjectModel::RenameIndex(QModelIndex index, QString newName)
+{
+    if (index.isValid()){
+        NyProjectItem *item = static_cast<NyProjectItem*>(index.internalPointer());
+        item->Rename(newName);
+    }
+
+    return true;
+}
+
 bool NyProjectModel::CloseEdited(NyEditor *editor)
 {
     QModelIndex index = FindEdited(_mainRoot, editor);
@@ -179,6 +189,11 @@ QString NyProjectModel::ScriptToRun(NyEditor *editor)
     }
 
     return "";
+}
+
+QString NyProjectModel::FileNameOfIndex(QModelIndex index)
+{
+    return (static_cast<NyProjectItem*>(index.internalPointer()))->FileName();
 }
 
 QModelIndex NyProjectModel::FindEdited(NyProjectItem *root, NyEditor *editor)
