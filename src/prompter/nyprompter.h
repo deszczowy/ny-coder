@@ -26,7 +26,7 @@ signals:
     void ApplyPrompt(QString prompted);
 
 public:
-    explicit NyPrompter(QWidget *parent = 0);
+    explicit NyPrompter(QWidget *parent = nullptr);
     ~NyPrompter();
 
     void Update(QString prefix, QRect geometry);

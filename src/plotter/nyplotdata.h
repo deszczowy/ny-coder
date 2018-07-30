@@ -11,25 +11,25 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #ifndef READER_H
 #define READER_H
 
-#include "frame.h"
+#include "nysoundframe.h"
 #include <QString>
 #include <QList>
 
 
-class PlotData
+class NyPlotData
 {
 public:
-    PlotData(QString path);
+    NyPlotData(QString path);
 
     double Length();
     int Count();
     void Reset();
     bool HasNextFrame();
     bool HasFrames();
-    Frame &Next();
+    NySoundFrame &Next();
 
 private:
-    QList<Frame> _frames;
+    QList<NySoundFrame> _frames;
 
     // properties
     double _max;

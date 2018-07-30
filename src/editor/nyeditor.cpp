@@ -180,6 +180,7 @@ void NyEditor::keyPressEvent(QKeyEvent *event)
         QPlainTextEdit::keyPressEvent(event);
 
         QString prefix = TextUnderCursor();
+        Logger::Write(prefix);
 
         _prompter->Update(prefix, PromptGeometry(prefix));
 
@@ -307,8 +308,12 @@ QString NyEditor::TextUnderCursor() const
     QString s = c.selectedText().trimmed();
     int sp = s.lastIndexOf(' ', pos);
     int par = s.lastIndexOf('(', pos);
+    int nl = s.lastIndexOf('\n', pos);
+    int cr = s.lastIndexOf('\r', pos);
 
     sp = SwissArmyKnife::Max(sp, par);
+    nl = SwissArmyKnife::Max(nl, cr);
+    sp = SwissArmyKnife::Max(sp, nl);
 
     if (sp < 0) sp = 0; else sp++;
     return s.mid(sp, pos -sp +1).trimmed();

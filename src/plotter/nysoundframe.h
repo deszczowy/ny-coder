@@ -11,11 +11,11 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #ifndef FRAME_H
 #define FRAME_H
 
-class Frame
+class NySoundFrame
 {
 public:
-    Frame();
-    Frame(double time, double value);
+    NySoundFrame();
+    NySoundFrame(double time, double value);
     double Time();
     double Value();
 private:

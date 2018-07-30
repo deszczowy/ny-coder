@@ -9,7 +9,7 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 */
 
 #include "canvas.h"
-#include "plotdata.h"
+#include "nyplotdata.h"
 
 #include <QPainter>
 
@@ -48,7 +48,7 @@ void Canvas::paintEvent(QPaintEvent *)
     delete _painter;
 }
 
-QPoint Canvas::PointFromFrame(Frame &frame, double maxTime)
+QPoint Canvas::PointFromFrame(NySoundFrame &frame, double maxTime)
 {
     int x = frame.Time() * _canvasSize.x() / maxTime;
     int y = _canvasSize.y() * ((1 - frame.Value()) / 2);
@@ -75,7 +75,7 @@ void Canvas::PrintPointsFromFile()
 
         QPoint p0(0, _canvasSize.y() / 2);
         QPoint p1;
-        Frame frame;
+        NySoundFrame frame;
 
         _plotData->Reset();
 
@@ -117,23 +117,24 @@ void Canvas::PaintGrid()
 
     double step = _duration / 5;
     double x = step;
-    QList<Frame> list;
+    QList<NySoundFrame> list;
 
     for (int i = 0; i < 4; ++i){
-        list.append(Frame(x, -1));
-        list.append(Frame(x, 1));
+        list.append(NySoundFrame(x, -1));
+        list.append(NySoundFrame(x, 1));
         x += step;
     }
 
     int i = 0;
     QPoint p0;
     QPoint p1;
-    foreach (Frame frame, list) {
+    foreach (NySoundFrame frame, list) {
         if (i % 2 == 0){
             p0 = PointFromFrame(frame, _plotData->Length());
         } else {
             p1 = PointFromFrame(frame, _plotData->Length());
             _painter->drawLine(p0, p1);
+            _painter->drawText(p0, QString::number(frame.Time()));
         }
         ++i;
     }
@@ -142,7 +143,7 @@ void Canvas::PaintGrid()
 
 void Canvas::ReadPlotData()
 {
-    _plotData = new PlotData(_file);
+    _plotData = new NyPlotData(_file);
 }
 
 void Canvas::DropPlotData()

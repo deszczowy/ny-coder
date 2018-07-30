@@ -23,6 +23,7 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #include <QTextEdit>
 #include <QSplitter>
 #include <QTreeWidgetItem>
+#include <QLabel>
 
 #include <src/plotter/canvas.h>
 
@@ -37,6 +38,8 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #include <src/project/nyprojectmodel.h>
 
 #include <src/nyquist/nyoutputanalyzer.h>
+
+#include <src/status/nystatusarea.h>
 
 namespace Ui {
 class MainWindow;
@@ -61,6 +64,7 @@ private:
     void CheckOutput(QString data);
     void ConnectSlots();
     void CreatePlotterCanvas();
+    void CreateStatusArea();
     void CreateTransportButtons();
     void DestroyMenuNodes();
     void EditorsSettings();
@@ -73,11 +77,13 @@ private:
 
 
 private slots:
+    void onAddNode();
     void onBreak();
     void onClear();
     void onCloseCurrentFile();
     void onCLoseTab(int index);
     void onFinished(int, QProcess::ExitStatus);
+    void onFoldNode();
     void onFullscreen();
     void onGo();
     void onMenu();
@@ -85,8 +91,11 @@ private slots:
     void onPlot();
     void onProjectElementSelection(const QModelIndex &index);
     void onProjectMenuRequest(const QPoint &point);
+    void onQuit();
+    void onQuitApplication();
     void onRefresh();
     void onReloadProject();
+    void onRemoveNode();
     void onRenameNode();
     void onReplayLast();
     void onSaveAllFiles();
@@ -97,8 +106,8 @@ private slots:
     void onTogglePlotter();
     void onToggleProjectTree();
     void onTest();
-    void onQuit();
-    void onQuitApplication();
+    void onUnfoldNode();
+
 
 
 private:
@@ -173,6 +182,7 @@ private:
 private:
     NyProjectModel *_project;
     NyOutputAnalyzer *_analyzer;
+    NyStatusArea *_status;
 
 private:
     QSplitter *_mainSplitter;
@@ -183,6 +193,7 @@ private:
     NyActionButton *_runButton;
     NyActionButton *_replayButton;
     NyActionButton *_breakButton;
+
     QHBoxLayout *_transporterLayout;
 
 private:

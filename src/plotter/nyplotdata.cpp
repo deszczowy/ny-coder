@@ -8,50 +8,50 @@ Nyquist Copyright (c) by Roger B. Dannenberg
 Qt Framework Copyright (c) The Qt Company Ltd.
 */
 
-#include "plotdata.h"
+#include "nyplotdata.h"
 #include <src/swiss.h>
 
 #include <QTextStream>
 
-PlotData::PlotData(QString path)
+NyPlotData::NyPlotData(QString path)
 {
     Reset();
     InitializeProperties();
     ProcessFile(path);
 }
 
-double PlotData::Length()
+double NyPlotData::Length()
 {
     return _length;
 }
 
-void PlotData::Reset()
+void NyPlotData::Reset()
 {
     _cursor = 0;
 }
 
-Frame &PlotData::Next()
+NySoundFrame &NyPlotData::Next()
 {
     _cursor++;
     return _frames[_cursor -1];
 }
 
-bool PlotData::HasNextFrame()
+bool NyPlotData::HasNextFrame()
 {
     return _cursor < _frames.count();
 }
 
-bool PlotData::HasFrames()
+bool NyPlotData::HasFrames()
 {
     return _frames.count() > 0;
 }
 
-int PlotData::Count()
+int NyPlotData::Count()
 {
     return _frames.count();
 }
 
-void PlotData::InitializeProperties()
+void NyPlotData::InitializeProperties()
 {
     // this settings prevents properties stick to 0
     _min = 1.0;
@@ -61,7 +61,7 @@ void PlotData::InitializeProperties()
     _frames.clear();
 }
 
-void PlotData::Add(QStringList pair)
+void NyPlotData::Add(QStringList pair)
 {
     // contain key (time) and value (amplitude)
     if (2 == pair.count()){
@@ -73,11 +73,11 @@ void PlotData::Add(QStringList pair)
         _min = SwissArmyKnife::Min(_min, two);
         _length = SwissArmyKnife::Max(_length, one);
 
-        _frames.append(Frame(one, two));
+        _frames.append(NySoundFrame(one, two));
     }
 }
 
-void PlotData::ProcessFile(QString path)
+void NyPlotData::ProcessFile(QString path)
 {
     QFile file(path);
     if (file.open(QFile::ReadOnly | QIODevice::Text))

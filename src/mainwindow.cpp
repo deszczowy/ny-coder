@@ -134,6 +134,11 @@ void MainWindow::CreatePlotterCanvas()
     _canvas->setVisible(false);
 }
 
+void MainWindow::CreateStatusArea()
+{
+    _status = new NyStatusArea();
+}
+
 void MainWindow::CreateTransportButtons()
 {
     if (ui->transportPane){
@@ -301,6 +306,13 @@ void MainWindow::onStdoutAvailable(){
 
 void MainWindow::onFinished(int, QProcess::ExitStatus){}
 
+void MainWindow::onFoldNode()
+{
+    ui->projectStructureView->collapse(
+        ui->projectStructureView->currentIndex()
+    );
+}
+
 void MainWindow::CheckOutput(QString data)
 {
     _analyzer->Analyze(data);
@@ -380,6 +392,13 @@ void MainWindow::onTest()
     ui->projectStructureView->expandAll();
 
     _controller.SetupProject(dir);
+}
+
+void MainWindow::onUnfoldNode()
+{
+    ui->projectStructureView->expand(
+        ui->projectStructureView->currentIndex()
+    );
 }
 
 void MainWindow::onFullscreen()
@@ -471,6 +490,15 @@ void MainWindow::onReloadProject()
 {
     if (_project && SaveAllFiles()){
         //_project->Reload(); //!!
+    }
+}
+
+void MainWindow::onRemoveNode()
+{
+    QModelIndex selected = ui->projectStructureView->currentIndex();
+
+    if (selected.isValid()){
+        _project->RemoveNode(selected);
     }
 }
 
@@ -571,6 +599,18 @@ void MainWindow::ShowContextMenu(const QPoint &pos)
     }
 }
 
+void MainWindow::onAddNode()
+{
+    QModelIndex selected = ui->projectStructureView->currentIndex();
+    NyNodeDialog *dialog = new NyNodeDialog();
+    dialog->exec();
+
+    if (dialog->Response()){
+        _project->AddFileToProject(selected, dialog->Value());
+        ui->projectStructureView->expand(selected);
+    }
+}
+
 void MainWindow::BuildMenu()
 {
     _mainMenu = new QMenu(tr("Nyquist Coder Menu"), this);
@@ -629,6 +669,10 @@ void MainWindow::BuildProjectMenu()
     _projectTreeMenu->addAction(_doUnfoldNode);
 
     connect(_doRenameElement, SIGNAL(triggered(bool)), this, SLOT(onRenameNode()));
+    connect(_doAddElement, SIGNAL(triggered(bool)), this, SLOT(onAddNode()));
+    connect(_doRemoveElement, SIGNAL(triggered(bool)), this, SLOT(onRemoveNode()));
+    connect(_doFoldNode, SIGNAL(triggered(bool)), this, SLOT(onFoldNode()));
+    connect(_doUnfoldNode, SIGNAL(triggered(bool)), this, SLOT(onUnfoldNode()));
     connect(
         ui->projectStructureView,
         SIGNAL(customContextMenuRequested(const QPoint &)), this,
@@ -640,6 +684,7 @@ void MainWindow::BuildWorkspace()
 {
     CreateTransportButtons();
     CreatePlotterCanvas();
+    CreateStatusArea();
 
     _workspaceSplitter = new QSplitter(this);
     _workspaceSplitter->setOrientation(Qt::Horizontal);
@@ -649,6 +694,7 @@ void MainWindow::BuildWorkspace()
 
     _mainSplitter->addWidget(_workspaceSplitter);
     _mainSplitter->addWidget(_canvas);
+    _mainSplitter->addWidget(_status);
 
     _workspaceSplitter->addWidget(ui->navigatorPane);
     _workspaceSplitter->addWidget(ui->editorPane);

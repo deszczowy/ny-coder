@@ -50,6 +50,11 @@ void NyProjectItem::AppendChild(NyProjectItem *child)
     _children.append(child);
 }
 
+void NyProjectItem::RemoveChild(NyProjectItem *child)
+{
+    _children.removeOne(child);
+}
+
 NyProjectItem *NyProjectItem::Child(int row)
 {
     return _children.value(row);
@@ -117,7 +122,12 @@ void NyProjectItem::SetFile(QString path, QString root)
     _absolutePath = path;
     _relativePath = path.mid(offset);
     _fileName = info.fileName();
-    _isDirectory = info.isDir();
+
+    if (!info.exists()){
+        _isDirectory = !FileName().contains(".");
+    } else {
+        _isDirectory = info.isDir();
+    }
 
     _isValid = true;
 }
@@ -202,11 +212,19 @@ QString NyProjectItem::FileName()
 
 bool NyProjectItem::SaveOnDisc()
 {
-    QString content = _editor->Content();
+    QString content = "";
+    if (QFile::exists(_absolutePath)){
+        content = _editor->Content();
+    }
 
-    std::ofstream out(_absolutePath.toStdString());
-    out << content.toStdString();
-    out.close();
+    if (_isDirectory){
+        QDir dir;
+        return dir.mkpath(_absolutePath);
+    } else {
+        std::ofstream out(_absolutePath.toStdString());
+        out << content.toStdString();
+        out.close();
 
-    return !out.bad();
+        return !out.bad();
+    }
 }

@@ -11,8 +11,8 @@ Qt Framework Copyright (c) The Qt Company Ltd.
 #ifndef RENDERAREA_H
 #define RENDERAREA_H
 
-#include "frame.h"
-#include "plotdata.h"
+#include "nysoundframe.h"
+#include "nyplotdata.h"
 
 #include <QBrush>
 #include <QPainter>
@@ -26,7 +26,7 @@ class Canvas : public QWidget
     Q_OBJECT
 
 public:
-    Canvas(QWidget *parent = 0);
+    Canvas(QWidget *parent = nullptr);
     void Plot(QString file, double duration);
     void SetPen(QColor penColor);
     void SetBrush(QColor brushColor);
@@ -41,7 +41,7 @@ private:
     QPoint _canvasSize;
 
     QPainter *_painter;
-    PlotData *_plotData;
+    NyPlotData *_plotData;
 
     QPushButton *_closeButton;
 
@@ -49,7 +49,7 @@ private:
 
     double _duration;
 
-    QPoint PointFromFrame(Frame &frame, double maxTime);
+    QPoint PointFromFrame(NySoundFrame &frame, double maxTime);
     void PrintPointsFromFile();
 
     void PaintGrid();

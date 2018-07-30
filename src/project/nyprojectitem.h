@@ -24,6 +24,7 @@ public:
 
 public:
     void AppendChild(NyProjectItem *child);
+    void RemoveChild(NyProjectItem *child);
     NyProjectItem *Child(int row);
     NyProjectItem *Parent();
     int ChildCount() const;

@@ -27,8 +27,8 @@ class NyEditor : public QPlainTextEdit
 {
     Q_OBJECT
 public:
-    NyEditor(QWidget *parent = 0);
-    ~NyEditor();
+    NyEditor(QWidget *parent = nullptr);
+    ~NyEditor() override;
 
     void LineNumberAreaPaintEvent(QPaintEvent *event);
     int LineNumberAreaWidth();

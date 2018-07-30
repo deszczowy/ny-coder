@@ -1,3 +1,13 @@
+/*
+Copyright (c) 2018 Krystian Szklarek <szklarek@protonmail.com>
+All rights reserved.
+This file is part of "Nyquist Coder" project licensed under MIT License.
+See LICENSE file in the project root for license information.
+
+Nyquist Copyright (c) by Roger B. Dannenberg
+Qt Framework Copyright (c) The Qt Company Ltd.
+*/
+
 #include "nyprojectmodel.h"
 
 #include <QDir>
@@ -165,6 +175,50 @@ bool NyProjectModel::RenameIndex(QModelIndex index, QString newName)
     }
 
     return true;
+}
+
+bool NyProjectModel::AddFileToProject(QModelIndex nodeIndex, QString name)
+{
+    if (nodeIndex.isValid()){
+        NyProjectItem *item = static_cast<NyProjectItem*>(nodeIndex.internalPointer());
+        if (item->IsDirectory()){
+            QString newPath = item->AbsolutePath();
+            newPath.append("/");
+            newPath.append(name);
+
+            NyProjectItem *newItem = new NyProjectItem(newPath, _rootPath, item);
+            beginInsertRows(nodeIndex, 0, 0);
+            item->AppendChild(newItem);
+            endInsertRows();
+
+            return newItem->SaveOnDisc();
+        }
+    }
+    return false;
+}
+
+bool NyProjectModel::RemoveNode(QModelIndex index)
+{
+    bool ok = false;
+
+    if (index.isValid()){
+        NyProjectItem *item = static_cast<NyProjectItem*>(index.internalPointer());
+
+        if (item->IsDirectory()){
+            QDir dir(item->AbsolutePath());
+            ok = dir.removeRecursively();
+        } else {
+            ok = QFile::remove(item->AbsolutePath());
+        }
+
+        if (ok) {
+            int row = item->Row();
+            NyProjectItem *parent = static_cast<NyProjectItem*>(index.parent().internalPointer());
+            beginRemoveRows(index.parent(), row, row);
+            parent->RemoveChild(item);
+            endRemoveRows();
+        }
+    }
 }
 
 bool NyProjectModel::CloseEdited(NyEditor *editor)

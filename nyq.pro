@@ -36,8 +36,6 @@ SOURCES += \
     src/storage/storage.cpp \
     src/preferences.cpp \
     src/plotter/canvas.cpp \
-    src/plotter/frame.cpp \
-    src/plotter/plotdata.cpp \
     src/swiss.cpp \
     src/logger.cpp \
     src/visual/nyactionbutton.cpp \
@@ -47,7 +45,10 @@ SOURCES += \
     src/project/nyprojectmodel.cpp \
     src/editor/nyeditor.cpp \
     src/nyquist/nyoutputanalyzer.cpp \
-    src/nynodedialog.cpp
+    src/nynodedialog.cpp \
+    src/status/nystatusarea.cpp \
+    src/plotter/nysoundframe.cpp \
+    src/plotter/nyplotdata.cpp
 
 HEADERS += \
         src/mainwindow.h \
@@ -60,8 +61,6 @@ HEADERS += \
     src/storage/storage.h \
     src/preferences.h \
     src/plotter/canvas.h \
-    src/plotter/frame.h \
-    src/plotter/plotdata.h \
     src/swiss.h \
     src/storage/labels.h \
     src/logger.h \
@@ -73,7 +72,10 @@ HEADERS += \
     src/project/nyprojectmodel.h \
     src/editor/nyeditor.h \
     src/nyquist/nyoutputanalyzer.h \
-    src/nynodedialog.h
+    src/nynodedialog.h \
+    src/status/nystatusarea.h \
+    src/plotter/nysoundframe.h \
+    src/plotter/nyplotdata.h
 
 FORMS += \
         src/mainwindow.ui \
